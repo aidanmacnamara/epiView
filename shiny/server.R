@@ -8,7 +8,7 @@ shinyServer(function(input, output) {
     
   global_choice = eventReactive(input$do_global, {
     validate(
-      need(input$project_choice != "", 'Please choose at least one feature.')
+      need(input$project_choice != "", 'Please select at least one project to view.')
     )
     
     tmp_list = list()
@@ -47,43 +47,22 @@ shinyServer(function(input, output) {
   })
   
   
-  my_choices <- reactive({
-    
-    my_choices = list()
-    
-    gene_choice <- renderPrint({input$gene_choice})()
-    my_choices$gene_choice = unlist(regmatches(gene_choice, gregexpr("[A-Z][[:alnum:]]+", gene_choice)))
-    
-    go_choice <- renderPrint({input$go_choice})()
-    my_choices$go_choice = str_replace(go_choice, "^.*\"([[:alnum:]\\s]+)\"", "\\1")
-    # print(my_choices$go_choice)
-    
-    cell_target_choice <- renderPrint({input$cell_target_choice})()
-    my_choices$cell_target_choice = unlist(regmatches(cell_target_choice, gregexpr("[[:alnum:]_]+", cell_target_choice)))[-1] # remove na added
-    
-    cell_candidate_choice <- renderPrint({input$cell_candidate_choice})()
-    my_choices$cell_candidate_choice = unlist(regmatches(cell_candidate_choice, gregexpr("[[:alnum:]_]+", cell_candidate_choice)))[-1] # remove na added
-    
-    return(my_choices)
-  })
-  
-  
   output$fountain_plot <- renderPlot({
     
     if(
-      (my_choices()$gene_choice[1]!="NULL" | my_choices()$go_choice[1]!="NULL") &
-      my_choices()$cell_target_choice[1]!="NULL" &
-      my_choices()$cell_candidate_choice[1]!="NULL"
+      (length(input$gene_choice) | length(input$go_choice)) &
+      length(input$cell_target_choice) &
+      length(input$cell_candidate_choice)
     ) {
       
-      if(my_choices()$go_choice[1]!="NULL") {
-        genes = msig_go_bp[[which(names(msig_go_bp)==my_choices()$go_choice)]]
+      if(length(input$go_choice)) {
+        genes = unique(unlist(msig_go_bp[names(msig_go_bp) %in% input$go_choice]))
       } else {
-        genes = my_choices()$gene_choice
+        genes = input$gene_choice
       }
       
-      c_cells = my_choices()$cell_candidate_choice
-      t_cells = my_choices()$cell_target_choice
+      c_cells = input$cell_candidate_choice
+      t_cells = input$cell_target_choice
       
       col_ix = which(colnames(dat[[1]]$res) %in% genes)
       
@@ -108,72 +87,42 @@ shinyServer(function(input, output) {
   
   model_choice <- eventReactive(input$do_model, {
     
-    model_choice = list()
-    
-    c_choice = renderPrint({input$candidate_choice})()
-    c_choice = unlist(regmatches(c_choice, gregexpr("[[:alnum:]_]+", c_choice)))[-1] # remove na added
-    c_ix = which(rownames(dat[[1]]$res) %in% c_choice)
-    
-    a_choice = renderPrint({input$alt_choice})()
-    a_choice = unlist(regmatches(a_choice, gregexpr("[[:alnum:]_]+", a_choice)))[-1] # remove na added
-    a_ix = which(rownames(dat[[1]]$res) %in% a_choice)
-    
-    t_choice = renderPrint({input$target_choice})()
-    t_choice = unlist(regmatches(t_choice, gregexpr("[[:alnum:]_]+", t_choice)))[-1] # remove na added
-    t_ix = which(rownames(dat[[1]]$res) %in% t_choice)
-    
-    x_axis_choice <- renderPrint({input$x_axis})()
-    x_axis_choice = str_replace(x_axis_choice, "^.*\"([[:alnum:]\\s]+)\"", "\\1") 
-    x_axis_ix = which(names(dat)==x_axis_choice)
-    
-    x_axis_choice <- renderPrint({input$x_axis})()
-    x_axis_choice = str_replace(x_axis_choice, "^.*\"([[:alnum:]\\s]+)\"", "\\1") 
-    
-    y_axis_choice <- renderPrint({input$y_axis})()
-    y_axis_choice = str_replace(y_axis_choice, "^.*\"([[:alnum:]\\s]+)\"", "\\1")
+    c_ix = which(rownames(dat[[1]]$res) %in% input$candidate_choice)
+    a_ix = which(rownames(dat[[1]]$res) %in% input$alt_choice)
+    t_ix = which(rownames(dat[[1]]$res) %in% input$target_choice)
     
     if(
       length(c_ix) &
       length(a_ix) &
       length(t_ix) &
-      x_axis_choice!="NULL" &
-      y_axis_choice!="NULL"
+      length(input$x_axis) &
+      length(input$y_axis)
     )  {
       
-      model_choice$my_df = spotfire_view(dat, x_axis=x_axis_choice, y_axis=y_axis_choice, comp_ix=list(c_ix, a_ix, t_ix))
-      rownames(model_choice$my_df) = NULL
-      model_choice$my_df = tbl_df(model_choice$my_df)
+      my_df = spotfire_view(dat, x_axis=input$x_axis, y_axis=input$y_axis, comp_ix=list(c_ix, a_ix, t_ix))
+      rownames(my_df) = NULL
+      my_df = tbl_df(my_df)
     }
     
-    return(model_choice)
+    return(my_df)
     
   })
   
   
   output$plot_model_choice <- renderPlot({
     
-    dat_out = model_choice()$my_df
-    
-    if(my_choices()$gene_choice[1]!="NULL" | my_choices()$go_choice[1]!="NULL") {
-      if(my_choices()$go_choice[1]!="NULL") {
-        genes = msig_go_bp[[which(names(msig_go_bp)==my_choices()$go_choice)]]
-      } else {
-        genes = my_choices()$gene_choice
-      }
-      dat_out$color = ifelse(dat_out$Gene %in% genes, 2, 1)
-    } else {
-      dat_out$color = 1
-    }
-    
+    dat_out = model_choice()
+    dat_out$color = 1
     dat_out$color = factor(dat_out$color)
     dat_out = tbl_df(dat_out)
+    
     ggplot(dat_out, aes_string(names(dat_out)[2], names(dat_out)[3])) + geom_point(size=2, aes(color=color, alpha=color)) + theme_thesis() + scale_color_discrete(guide=FALSE) + scale_alpha_manual(guide=FALSE, values=c(0.3,0.8))
     
   })
   
   
   selected_data <- reactive({
-    brushedPoints(model_choice()$my_df, input$plot_model_choice_brush)
+    brushedPoints(model_choice(), input$plot_model_choice_brush)
   })
   
   
