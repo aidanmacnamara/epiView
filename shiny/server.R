@@ -1,91 +1,74 @@
-require(epiChoose)
-require(shiny)
-require(tidyverse)
-require(ggrepel)
-require(reshape2)
-require(biomaRt)
-require(rtracklayer)
-require(Sushi)
 
-load("gene_list_all.RData")
-load("t_list.RData")
-load("dat.RData")
-load("msig_go_bp.RData")
-
-single_labels = rownames(dat[[1]]$res)
-group_labels = "GSK"
-pca_data = prep_for_plot(dat, annot_1=group_labels, annot_2=single_labels, marks=names(dat), plot_type="mds")
+# single_labels = rownames(dat[[1]]$res)
+# group_labels = "GSK"
+# pca_data = prep_for_plot(dat, annot_1=group_labels, annot_2=single_labels, marks=names(dat), plot_type="mds")
 
 shinyServer(function(input, output) {
   
-  my_choices <- reactive(
-    {
-      
-      my_choices = list()
-      
-      gene_choice <- renderPrint({input$gene_choice})()
-      my_choices$gene_choice = unlist(regmatches(gene_choice, gregexpr("[A-Z][[:alnum:]]+", gene_choice)))
-      
-      go_choice <- renderPrint({input$go_choice})()
-      my_choices$go_choice = str_replace(go_choice, "^.*\"([[:alnum:]\\s]+)\"", "\\1")
-      # print(my_choices$go_choice)
-      
-      cell_target_choice <- renderPrint({input$cell_target_choice})()
-      my_choices$cell_target_choice = unlist(regmatches(cell_target_choice, gregexpr("[[:alnum:]_]+", cell_target_choice)))[-1] # remove na added
-      
-      cell_candidate_choice <- renderPrint({input$cell_candidate_choice})()
-      my_choices$cell_candidate_choice = unlist(regmatches(cell_candidate_choice, gregexpr("[[:alnum:]_]+", cell_candidate_choice)))[-1] # remove na added
-      
-      return(my_choices)
-    }
-  )
-  
-  model_choice <- eventReactive(input$do_model,
-    {
-      
-      model_choice = list()
-      
-      c_choice = renderPrint({input$candidate_choice})()
-      c_choice = unlist(regmatches(c_choice, gregexpr("[[:alnum:]_]+", c_choice)))[-1] # remove na added
-      c_ix = which(rownames(dat[[1]]$res) %in% c_choice)
-      
-      a_choice = renderPrint({input$alt_choice})()
-      a_choice = unlist(regmatches(a_choice, gregexpr("[[:alnum:]_]+", a_choice)))[-1] # remove na added
-      a_ix = which(rownames(dat[[1]]$res) %in% a_choice)
-      
-      t_choice = renderPrint({input$target_choice})()
-      t_choice = unlist(regmatches(t_choice, gregexpr("[[:alnum:]_]+", t_choice)))[-1] # remove na added
-      t_ix = which(rownames(dat[[1]]$res) %in% t_choice)
-      
-      x_axis_choice <- renderPrint({input$x_axis})()
-      x_axis_choice = str_replace(x_axis_choice, "^.*\"([[:alnum:]\\s]+)\"", "\\1") 
-      x_axis_ix = which(names(dat)==x_axis_choice)
-      
-      x_axis_choice <- renderPrint({input$x_axis})()
-      x_axis_choice = str_replace(x_axis_choice, "^.*\"([[:alnum:]\\s]+)\"", "\\1") 
-      
-      y_axis_choice <- renderPrint({input$y_axis})()
-      y_axis_choice = str_replace(y_axis_choice, "^.*\"([[:alnum:]\\s]+)\"", "\\1")
-      
-      if(
-        length(c_ix) &
-        length(a_ix) &
-        length(t_ix) &
-        x_axis_choice!="NULL" &
-        y_axis_choice!="NULL"
-      )  {
-        
-        model_choice$my_df = spotfire_view(dat, x_axis=x_axis_choice, y_axis=y_axis_choice, comp_ix=list(c_ix, a_ix, t_ix))
-        rownames(model_choice$my_df) = NULL
-        model_choice$my_df = tbl_df(model_choice$my_df)
+    
+  global_choice = eventReactive(input$do_global, {
+    validate(
+      need(input$project_choice != "", 'Please choose at least one feature.')
+    )
+    
+    tmp_list = list()
+    
+    tmp = dat
+    proj_ix = which(tmp[[1]]$annot$Project %in% input$project_choice)
+    
+    if(!"All" %in% input$project_choice) {
+      for(i in 1:length(tmp)) {
+        tmp[[i]]$res = tmp[[i]]$res[proj_ix,] 
+        tmp[[i]]$annot = tmp[[i]]$annot[proj_ix,]
       }
-      
-      return(model_choice)
-      
-    } 
-  )
+    }
+    
+    tmp_list$tmp = tmp
+    tmp_list$mds_type = input$mds_type
+    tmp_list$labels = tmp[[1]]$annot$Label
+    
+    return(tmp_list)
+  })
   
-  output$dist_plot_1 <- renderPlot({
+  
+  global_plot <- reactive({
+    
+    single_labels = rownames(global_choice()$tmp[[1]]$res)
+    group_labels = global_choice()$tmp[[1]]$annot$Project
+    pca_data = prep_for_plot(global_choice()$tmp, annot_1=group_labels, annot_2=single_labels, marks=names(global_choice()$tmp), plot_type=global_choice()$mds_type)
+    pca_data$annot_1 = paste("Project", pca_data$annot_1)
+    return(pca_data)
+  })
+  
+  
+  output$global_view <- renderPlot({
+    print(ggplot(global_plot(), aes(x=x, y=y, color=factor(annot_1))) + geom_point(size=3, shape=17) + theme_thesis(20) + geom_text_repel(aes(label=annot_2), fontface="bold", size=input$label.size.global, force=0.5, show.legend=FALSE) + facet_wrap(~mark, nrow=2, scales="free"))
+    
+  })
+  
+  
+  my_choices <- reactive({
+    
+    my_choices = list()
+    
+    gene_choice <- renderPrint({input$gene_choice})()
+    my_choices$gene_choice = unlist(regmatches(gene_choice, gregexpr("[A-Z][[:alnum:]]+", gene_choice)))
+    
+    go_choice <- renderPrint({input$go_choice})()
+    my_choices$go_choice = str_replace(go_choice, "^.*\"([[:alnum:]\\s]+)\"", "\\1")
+    # print(my_choices$go_choice)
+    
+    cell_target_choice <- renderPrint({input$cell_target_choice})()
+    my_choices$cell_target_choice = unlist(regmatches(cell_target_choice, gregexpr("[[:alnum:]_]+", cell_target_choice)))[-1] # remove na added
+    
+    cell_candidate_choice <- renderPrint({input$cell_candidate_choice})()
+    my_choices$cell_candidate_choice = unlist(regmatches(cell_candidate_choice, gregexpr("[[:alnum:]_]+", cell_candidate_choice)))[-1] # remove na added
+    
+    return(my_choices)
+  })
+  
+  
+  output$fountain_plot <- renderPlot({
     
     if(
       (my_choices()$gene_choice[1]!="NULL" | my_choices()$go_choice[1]!="NULL") &
@@ -115,20 +98,59 @@ shinyServer(function(input, output) {
       c_ix = match(c_cells, rownames(dat[[1]]$res))
       t_ix = match(t_cells, rownames(dat[[1]]$res))
       
-      res = dist_mat(dat_plot, comp_ix=list(c_ix, t_ix), labels=single_labels, plot_labels=c("BEAS2B","A549","NHLF"), plot_res=TRUE, use_corr=TRUE, font_size=15, label_size=input$label.size.1)
+      res = dist_mat(dat_plot, comp_ix=list(c_ix, t_ix), labels=single_labels, plot_labels=c("BEAS2B","A549","NHLF"), plot_res=TRUE, use_corr=TRUE, font_size=30, label_size=input$label.size.1)
       
     } else {
-      res = dist_mat(x=dat, comp_ix=list(), labels=single_labels, plot_res=TRUE, use_corr=TRUE, font_size=15, label_size=input$label.size.1, plot_blank=TRUE)
+      res = dist_mat(x=dat, comp_ix=list(), labels=single_labels, plot_res=TRUE, use_corr=TRUE, font_size=30, label_size=input$label.size.1, plot_blank=TRUE)
     }
   })
   
-  output$dist_plot_2 <- renderPlot({
+  
+  model_choice <- eventReactive(input$do_model, {
     
-    print(ggplot(pca_data, aes(x=x, y=y, color=annot_1)) + geom_point(size=3, shape=17) + theme_thesis(20) + geom_text_repel(aes(label=annot_2), fontface="bold", size=input$label.size.2, force=0.5) + facet_wrap(~mark, ncol=2, scales="free"))
+    model_choice = list()
+    
+    c_choice = renderPrint({input$candidate_choice})()
+    c_choice = unlist(regmatches(c_choice, gregexpr("[[:alnum:]_]+", c_choice)))[-1] # remove na added
+    c_ix = which(rownames(dat[[1]]$res) %in% c_choice)
+    
+    a_choice = renderPrint({input$alt_choice})()
+    a_choice = unlist(regmatches(a_choice, gregexpr("[[:alnum:]_]+", a_choice)))[-1] # remove na added
+    a_ix = which(rownames(dat[[1]]$res) %in% a_choice)
+    
+    t_choice = renderPrint({input$target_choice})()
+    t_choice = unlist(regmatches(t_choice, gregexpr("[[:alnum:]_]+", t_choice)))[-1] # remove na added
+    t_ix = which(rownames(dat[[1]]$res) %in% t_choice)
+    
+    x_axis_choice <- renderPrint({input$x_axis})()
+    x_axis_choice = str_replace(x_axis_choice, "^.*\"([[:alnum:]\\s]+)\"", "\\1") 
+    x_axis_ix = which(names(dat)==x_axis_choice)
+    
+    x_axis_choice <- renderPrint({input$x_axis})()
+    x_axis_choice = str_replace(x_axis_choice, "^.*\"([[:alnum:]\\s]+)\"", "\\1") 
+    
+    y_axis_choice <- renderPrint({input$y_axis})()
+    y_axis_choice = str_replace(y_axis_choice, "^.*\"([[:alnum:]\\s]+)\"", "\\1")
+    
+    if(
+      length(c_ix) &
+      length(a_ix) &
+      length(t_ix) &
+      x_axis_choice!="NULL" &
+      y_axis_choice!="NULL"
+    )  {
+      
+      model_choice$my_df = spotfire_view(dat, x_axis=x_axis_choice, y_axis=y_axis_choice, comp_ix=list(c_ix, a_ix, t_ix))
+      rownames(model_choice$my_df) = NULL
+      model_choice$my_df = tbl_df(model_choice$my_df)
+    }
+    
+    return(model_choice)
     
   })
   
-  output$plot1 <- renderPlot({
+  
+  output$plot_model_choice <- renderPlot({
     
     dat_out = model_choice()$my_df
     
@@ -149,13 +171,16 @@ shinyServer(function(input, output) {
     
   })
   
+  
   selected_data <- reactive({
-    brushedPoints(model_choice()$my_df, input$plot1_brush)
+    brushedPoints(model_choice()$my_df, input$plot_model_choice_brush)
   })
+  
   
   output$brush_info <- renderPrint({
     selected_data()
   })
+  
   
   output$download_table <- downloadHandler(
     filename = function() { 
@@ -165,6 +190,18 @@ shinyServer(function(input, output) {
       write_csv(selected_data(), file)
     }
   )
+  
+  
+  output$GSEA <- renderPrint({
+    
+    # gsea_input = dplyr::arrange(data.frame(gene=x$Gene, score=unlist(x[,2])*unlist(x[,3])), desc(score))
+    # rownames(gsea_input) = gsea_input$gene
+    # gsea_input = as.matrix(gsea_input[,2,drop=FALSE])
+    
+    return(data.frame(foo=1:10, bar=LETTERS[1:10]))
+    
+  })
+  
   
   output$sushi<- renderPlot({
     
@@ -226,6 +263,7 @@ shinyServer(function(input, output) {
       }
     }
   })
-  
+
+    
 })
 
