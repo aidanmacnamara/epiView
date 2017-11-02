@@ -5,7 +5,7 @@
 
 shinyServer(function(input, output) {
   
-    
+  
   global_choice = eventReactive(input$do_global, {
     validate(
       need(input$project_choice != "", 'Please select at least one project to view.')
@@ -42,8 +42,16 @@ shinyServer(function(input, output) {
   
   
   output$global_view <- renderPlot({
-    print(ggplot(global_plot(), aes(x=x, y=y, color=factor(annot_1))) + geom_point(size=3, shape=17) + theme_thesis(20) + geom_text_repel(aes(label=annot_2), fontface="bold", size=input$label.size.global, force=0.5, show.legend=FALSE) + facet_wrap(~mark, nrow=2, scales="free"))
     
+    if(input$data_type=="All") {
+      
+      print(ggplot(global_plot(), aes(x=x, y=y, color=factor(annot_1))) + geom_point(size=3, shape=17) + theme_thesis(20) + geom_text_repel(aes(label=annot_2), fontface="bold", size=input$label.size.global, force=0.5, show.legend=FALSE) + facet_wrap(~mark, nrow=2, scales="free"))
+      
+    } else {
+      
+      print(ggplot(filter(global_plot(), mark==input$data_type), aes(x=x, y=y, color=factor(annot_1))) + geom_point(size=3, shape=17) + theme_thesis(20) + geom_text_repel(aes(label=annot_2), fontface="bold", size=input$label.size.global, force=0.5, show.legend=FALSE))
+      
+    }
   })
   
   
@@ -154,65 +162,53 @@ shinyServer(function(input, output) {
   
   output$sushi<- renderPlot({
     
-    sample_ix = c(1,3,15)
-    data_type = 1
-    win = 20000
+    sample_ix = sapply(input$cell_browser_choice, function(x) which(cells==x))
+    data_type = input$data_type_choice
+    win = input$browser_window
+    col_ix = which(colnames(dat[[1]]$res) %in% input$gene_browser_choice)
     
-    if(
-      (my_choices()$gene_choice[1]!="NULL" | my_choices()$go_choice[1]!="NULL") &
-      my_choices()$cell_target_choice[1]!="NULL" &
-      my_choices()$cell_candidate_choice[1]!="NULL"
-    ) {
+    roi = gene_list_all[col_ix]
+    start(roi) = start(roi) - win
+    end(roi) = end(roi) + win
+    
+    my_tracks = sapply(str_replace(dat[[data_type]]$annot$Bigwig[sample_ix], "/GWD/bioinfo/projects/", "z:/links/"), function(x) import.bw(x, which=roi))
+    
+    # mart_1 = useMart("ensembl", dataset="hsapiens_gene_ensembl")
+    # t_list = getBM(attributes=c("chromosome_name","exon_chrom_start","exon_chrom_end","ensembl_transcript_id","strand","ensembl_gene_id"), filters='hgnc_symbol', values=roi$hgnc_symbol, mart=mart_1)
+    # t_list$type = "exon"
+    # t_list$chromosome_name = paste0("chr", t_list$chromosome_name)
+    
+    t_list_filtered = filter(t_list, external_gene_name %in% input$gene_browser_choice)
+    
+    my_tracks_df = lapply(my_tracks, function(x) as.data.frame(x)[,c(1:3,6)])
+    
+    par(mfcol=c(length(sample_ix)+1,length(roi)), mar=c(4,4,2,2))
+    
+    for(g_ix in 1:length(roi)) {
       
-      if(my_choices()$go_choice[1]!="NULL") {
-        print(my_choices()$go_choice)
-        genes = msig_go_bp[[which(names(msig_go_bp)==my_choices()$go_choice)]]
-      } else {
-        genes = my_choices()$gene_choice
-      }
+      chrom = as.character(seqnames(roi)[g_ix])
+      chromstart = start(roi)[g_ix]
+      chromend = end(roi)[g_ix]
       
-      col_ix = which(colnames(dat[[1]]$res) %in% genes)
-      
-      roi = gene_list_all[col_ix]
-      start(roi) = start(roi) - win
-      end(roi) = end(roi) + win
-      
-      my_tracks = sapply(str_replace(dat[[data_type]]$annot$Bigwig[sample_ix], "/GWD/bioinfo/projects/", "z:/links/"), function(x) import.bw(x, which=roi))
-      
-      mart_1 = useMart("ensembl", dataset="hsapiens_gene_ensembl")
-      t_list = getBM(attributes=c("chromosome_name","exon_chrom_start","exon_chrom_end","ensembl_transcript_id","strand","ensembl_gene_id"), filters='hgnc_symbol', values=roi$hgnc_symbol, mart=mart_1)
-      t_list$type = "exon"
-      t_list$chromosome_name = paste0("chr", t_list$chromosome_name)
-      
-      my_tracks_df = lapply(my_tracks, function(x) as.data.frame(x)[,c(1:3,6)])
-      
-      par(mfcol=c(length(sample_ix)+1,length(roi)), mar=c(4,4,2,2))
-      
-      for(g_ix in 1:length(roi)) {
+      for(i in 1:length(sample_ix)) {
         
-        chrom = as.character(seqnames(roi)[g_ix])
-        chromstart = start(roi)[g_ix]
-        chromend = end(roi)[g_ix]
-        
-        for(i in 1:length(sample_ix)) {
-          
-          if(g_ix==1) {
-            plotBedgraph(my_tracks_df[[i]], chrom, chromstart, chromend, transparency=.2, color=SushiColors(2)(length(sample_ix))[i], main=rownames(dat[[1]]$res)[sample_ix[i]])
-          } else{
-            plotBedgraph(my_tracks_df[[i]], chrom, chromstart, chromend, transparency=.2, color=SushiColors(2)(length(sample_ix))[i])
-          }
-          labelgenome(chrom, chromstart, chromend, n=10, scale="Mb")
-          axis(side=2, las=2, tcl=.2)
-          
+        if(g_ix==1) {
+          plotBedgraph(my_tracks_df[[i]], chrom, chromstart, chromend, transparency=.2, color=SushiColors(2)(length(sample_ix))[i], main=rownames(dat[[1]]$res)[sample_ix[i]])
+        } else{
+          plotBedgraph(my_tracks_df[[i]], chrom, chromstart, chromend, transparency=.2, color=SushiColors(2)(length(sample_ix))[i])
         }
-        
-        plotGenes(t_list, chrom, chromstart, chromend, types=t_list$type, labeltext=TRUE, maxrows=50, height=0.4, plotgenetype="box")
-        labelplot(title=roi$hgnc_symbol[g_ix])
+        labelgenome(chrom, chromstart, chromend, n=10, scale="Mb")
+        axis(side=2, las=2, tcl=.2)
         
       }
+      
+      plotGenes(t_list_filtered, chrom, chromstart, chromend, types=t_list_filtered$type, labeltext=TRUE, maxrows=50, height=0.4, plotgenetype="box")
+      labelplot(title=roi$hgnc_symbol[g_ix])
+      
     }
-  })
-
     
+  })
+  
+  
 })
 

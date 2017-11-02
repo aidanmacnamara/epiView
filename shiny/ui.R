@@ -34,11 +34,6 @@ ui <- fluidPage(
                h3(""),
                h3(""),
                
-               sliderInput("label.size.global", NULL, min=1, max=10, value=4, step=1),
-               
-               h3(""),
-               h3(""),
-               
                selectInput("mds_type", label="Multi-dimensional-scaling Type", 
                            choices = list(
                              "PCA"="pca",
@@ -46,6 +41,9 @@ ui <- fluidPage(
                            ),
                            multiple=FALSE,
                            selected=list("PCA")),
+               
+               h3(""),
+               h3(""),
                
                actionButton("do_global", "Run"),
                
@@ -58,7 +56,23 @@ ui <- fluidPage(
                h3(""),
                h3(""),
                
-               plotOutput("global_view", height=800)
+               plotOutput("global_view", height=800),
+               
+               column(width=3,
+                      
+                      selectInput("data_type", label="Data Type Choice", 
+                                  choices = as.list(c("All", sort(names(dat)))),
+                                  multiple=FALSE,
+                                  selected=list("All")
+                      )
+                      
+               ),
+               
+               column(width=4,
+                      
+                      sliderInput("label.size.global", NULL, min=1, max=10, value=4, step=1)
+                      
+               )
                
              )
     ),
@@ -212,6 +226,65 @@ ui <- fluidPage(
                                    'Download'
                                  )
                           )
+                        )
+               ),
+               
+               tabPanel("Browser",
+                        sidebarPanel(
+                          
+                          selectInput("cell_browser_choice", label="Cell Choice", 
+                                      choices = as.list(sort(cells)),
+                                      multiple=TRUE,
+                                      selected=as.list(c("NHBE_BR1_Baseline","A549_BR1_Baseline","BEAS2B_BR1_Baseline"))
+                          ),
+                          
+                          bsTooltip("cell_browser_choice", "something", placement="bottom", trigger="hover", options=NULL),
+                          
+                          helpText(
+                            "Choose the cell types ..."
+                          ),
+                          
+                          h3(""),
+                          h3(""),
+                          
+                          selectInput("gene_browser_choice", label="Gene Choice", 
+                                      choices = as.list(sort(genes)),
+                                      multiple=TRUE,
+                                      selected=as.list(c("ICAM1","BAMBI"))
+                          ),
+                          
+                          helpText(
+                            "Choose the genes over which to make the comparison"
+                          ),
+                          
+                          h3(""),
+                          h3(""),
+                          
+                          selectInput("data_type_choice", label="Data Type Choice", 
+                                      choices = as.list(sort(names(dat))),
+                                      multiple=FALSE,
+                                      selected=list("H3K27ac")
+                          ),
+                          
+                          helpText(
+                            "Choose which data type to use"
+                          ),
+                          
+                          h3(""),
+                          h3(""),
+                          
+                          sliderInput("browser_window", NULL, min=1e4, max=5e4, value=2e4, step=1e4),
+                          
+                          helpText(
+                            "Browser window around gene."
+                          ),
+                          
+                          width=2
+                          
+                        ),
+                        
+                        mainPanel(
+                          plotOutput("sushi", height=800)
                         )
                )
              )
