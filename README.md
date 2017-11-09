@@ -1,5 +1,5 @@
 # epiView
-Shiny app for EpiChoosei
+Shiny app for EpiChoose
 
 Test
 
