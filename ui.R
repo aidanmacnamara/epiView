@@ -284,7 +284,7 @@ ui <- fluidPage(
                         ),
                         
                         mainPanel(
-                          plotOutput("sushi", height=800)
+                          # plotOutput("sushi", height=800)
                         )
                )
              )
