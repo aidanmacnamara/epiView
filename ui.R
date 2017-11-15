@@ -1,6 +1,7 @@
 
 require(shinyBS)
 
+load("dat.RData") # main data object
 cells = rownames(dat[[1]]$res)
 genes = colnames(dat[[1]]$res)
 # names(msig_go_bp) = str_replace(str_replace_all(names(msig_go_bp), "_", " "), "GO\\s+", "")
