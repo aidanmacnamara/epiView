@@ -7,6 +7,7 @@ require(biomaRt)
 require(rtracklayer)
 require(Sushi)
 require(stringr)
+require(ggplot2)
 
 # global objects
 

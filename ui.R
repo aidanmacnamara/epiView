@@ -1,7 +1,6 @@
 
-require(shinyBS)
+# require(shinyBS)
 
-load("dat.RData") # main data object
 cells = rownames(dat[[1]]$res)
 genes = colnames(dat[[1]]$res)
 # names(msig_go_bp) = str_replace(str_replace_all(names(msig_go_bp), "_", " "), "GO\\s+", "")
@@ -97,7 +96,7 @@ ui <- fluidPage(
                                       multiple=TRUE,
                                       selected=list("NHBE_BR1_Baseline")),
                           
-                          bsTooltip("cell_target_choice", "something", placement="bottom", trigger="hover", options=NULL),
+                          # bsTooltip("cell_target_choice", "something", placement="bottom", trigger="hover", options=NULL),
                           
                           helpText(
                             "Choose the target cell type"
@@ -243,7 +242,7 @@ ui <- fluidPage(
                                       selected=as.list(c("NHBE_BR1_Baseline","A549_BR1_Baseline","BEAS2B_BR1_Baseline"))
                           ),
                           
-                          bsTooltip("cell_browser_choice", "something", placement="bottom", trigger="hover", options=NULL),
+                          # bsTooltip("cell_browser_choice", "something", placement="bottom", trigger="hover", options=NULL),
                           
                           helpText(
                             "Choose the cell types ..."
