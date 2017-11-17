@@ -55,41 +55,62 @@ shinyServer(function(input, output) {
   })
   
   
-  output$fountain_plot <- renderPlot({
+  local_choice <- eventReactive(input$do_local, {
+    validate(
+      need(
+        (length(input$gene_choice) | length(input$go_choice)) &
+          length(input$cell_target_choice) &
+          length(input$cell_candidate_choice), 'Please select values for all fields.')
+    )
     
-    if(
-      (length(input$gene_choice) | length(input$go_choice)) &
-      length(input$cell_target_choice) &
-      length(input$cell_candidate_choice)
-    ) {
-      
-      if(length(input$go_choice)) {
-        genes = unique(unlist(msig_go_bp[names(msig_go_bp) %in% input$go_choice]))
-      } else {
-        genes = input$gene_choice
-      }
-      
-      c_cells = input$cell_candidate_choice
-      t_cells = input$cell_target_choice
-      
-      col_ix = which(colnames(dat[[1]]$res) %in% genes)
-      
-      # slice matrices if necessary
-      dat_plot = dat
-      for(j in 1:length(dat_plot)) { # each data type
-        dat_plot[[j]]$res = dat[[j]]$res[,col_ix,drop=FALSE]
-      }
-      
-      single_labels = rownames(dat_plot[[1]]$res)
-      
-      c_ix = match(c_cells, rownames(dat[[1]]$res))
-      t_ix = match(t_cells, rownames(dat[[1]]$res))
-      
-      res = dist_mat(dat_plot, comp_ix=list(c_ix, t_ix), labels=single_labels, plot_labels=c("BEAS2B","A549","NHLF"), plot_res=TRUE, use_corr=TRUE, font_size=30, label_size=input$label.size.1)
-      
+    tmp = dat
+    
+    if(length(input$go_choice)) {
+      genes = unique(unlist(msig_go_bp[names(msig_go_bp) %in% input$go_choice]))
     } else {
-      res = dist_mat(x=dat, comp_ix=list(), labels=single_labels, plot_res=TRUE, use_corr=TRUE, font_size=30, label_size=input$label.size.1, plot_blank=TRUE)
+      genes = input$gene_choice
     }
+    
+    col_ix = which(colnames(tmp[[1]]$res) %in% genes)
+    row_ix = which(rownames(tmp[[1]]$res) %in% c(input$cell_candidate_choice, input$cell_target_choice))
+    
+    # slice matrices if necessary
+    for(j in 1:length(tmp)) { # each data type
+      tmp[[j]]$res = tmp[[j]]$res[row_ix,col_ix,drop=FALSE]
+    }
+    
+    return(tmp)
+    
+  })
+  
+  
+  local_plot <- reactive({
+    
+    c_ix = match(input$cell_candidate_choice, rownames(local_choice()[[1]]$res))
+    t_ix = match(input$cell_target_choice, rownames(local_choice()[[1]]$res))
+    
+    res = dist_mat(local_choice(), comp_ix=list(c_ix, t_ix), labels=rownames(local_choice()[[1]]$res), label_points=FALSE)
+    return(res)
+  })
+  
+  
+  output$local_view_1 <- renderPlot({
+    local_plot()$plots[[1]] + geom_text_repel(aes(label=Cell), fontface="bold", size=input$label.size.local, force=0.5)
+  })
+  
+  
+  output$local_view_2 <- renderPlot({
+    local_plot()$plots[[2]]
+  })
+  
+  
+  output$local_view_3 <- renderPlot({
+    local_plot()$plots[[3]]
+  })
+  
+  
+  output$local_view_4 <- renderPlot({
+    local_plot()$plots[[4]]
   })
   
   

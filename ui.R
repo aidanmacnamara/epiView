@@ -30,7 +30,7 @@ ui <- fluidPage(
                                     "Project 4"=4,
                                     "Project 5"=5,
                                     "Project 6"=6,
-                                    "Blueprint"="Blueprint",
+                                    "Blueprint"="BLUEPRINT",
                                     "ENCODE"="ENCODE"
                                   ), selected="All"
                ),
@@ -136,6 +136,7 @@ ui <- fluidPage(
                           
                           selectInput("go_choice", label="Gene Ontology Choice", 
                                       choices = as.list(sort(names(msig_go_bp))),
+                                      selected = list("GLYCERALDEHYDE 3 PHOSPHATE METABOLIC PROCESS"),
                                       multiple=TRUE),
                           
                           helpText(
@@ -145,6 +146,8 @@ ui <- fluidPage(
                           h3(""),
                           h3(""),
                           
+                          actionButton("do_local", "Run"),
+                          
                           width=2
                         ),
                         
@@ -153,9 +156,23 @@ ui <- fluidPage(
                           h3(""),
                           h3(""),
                           
-                          plotOutput("fountain_plot", height=600),
-                          sliderInput("label.size.1", NULL, min=1, max=10, value=4, step=1)
+                          column(width=5,
+                                 
+                                 plotOutput("local_view_1", height=350),
+                                 
+                                 h3(""),
+                                 h3(""),
+                                 
+                                 plotOutput("local_view_3", height=350)
+                                 
+                          ),
                           
+                          column(width=7,
+                                 
+                                 plotOutput("local_view_2", height=700),
+                                 sliderInput("label.size.local", NULL, min=1, max=10, value=4, step=1)
+                                 
+                          ) 
                         )
                         
                ),
