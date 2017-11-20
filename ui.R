@@ -13,7 +13,16 @@ ui <- fluidPage(
     
     id = "tabs",
     
-    tabPanel("Data Selection",
+    tabPanel("Introduction",
+             
+             column(width=7,
+                    includeMarkdown("docs/help.Rmd")
+             ),
+             
+             column(width=5)
+    ),
+    
+    tabPanel("Data Overview",
              
              sidebarPanel(
                
