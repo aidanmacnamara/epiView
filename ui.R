@@ -69,7 +69,7 @@ ui <- fluidPage(
                h3(""),
                h3(""),
                
-               plotOutput("global_view", height=800),
+               plotOutput("global_view", height=700),
                
                column(width=3,
                       
@@ -85,8 +85,9 @@ ui <- fluidPage(
                       
                       sliderInput("label.size.global", NULL, min=1, max=10, value=4, step=1)
                       
-               )
+               ),
                
+               width=10
              )
     ),
     
@@ -165,7 +166,7 @@ ui <- fluidPage(
                           h3(""),
                           h3(""),
                           
-                          column(width=5,
+                          column(width=4,
                                  
                                  plotOutput("local_view_1", height=350),
                                  
@@ -176,12 +177,14 @@ ui <- fluidPage(
                                  
                           ),
                           
-                          column(width=7,
+                          column(width=8,
                                  
                                  plotOutput("local_view_2", height=700),
                                  sliderInput("label.size.local", NULL, min=1, max=10, value=4, step=1)
                                  
-                          ) 
+                          ),
+                          
+                          width=10
                         )
                         
                ),
@@ -314,11 +317,32 @@ ui <- fluidPage(
                         ),
                         
                         mainPanel(
-                          # plotOutput("sushi", height=800)
+                          
+                          plotOutput("sushi", height=800),
+                          width=10
+                          
                         )
                )
+               
+             )
+    ),
+    
+    tabPanel("Download",
+             
+             sidebarPanel(
+               checkboxGroupInput('show_vars', 'Columns to show:',
+                                  names(data_gsk),
+                                  selected=names(data_gsk)[1:9]),
+               textInput("collection_txt", label="Foo"),
+               width=2
+             ),
+             
+             mainPanel(
+               dataTableOutput("gsk_data"),
+               width=10
              )
     )
+    
   )
 )
 
