@@ -183,7 +183,7 @@ shinyServer(function(input, output) {
   
   output$sushi<- renderPlot({
     
-    sample_ix = sapply(input$cell_browser_choice, function(x) which(cells==x))
+    sample_ix = sapply(input$cell_browser_choice, function(x) which(rownames(dat[[1]]$res)==x))
     data_type = input$data_type_choice
     win = input$browser_window
     col_ix = which(colnames(dat[[1]]$res) %in% input$gene_browser_choice)
@@ -229,6 +229,17 @@ shinyServer(function(input, output) {
     }
     
   })
+  
+  
+  output$gsk_data = DT::renderDataTable(escape=FALSE, {
+    
+    # https://stackoverflow.com/questions/26026740/rstudio-shiny-list-from-checking-rows-in-datatables  
+    add_check <- paste0('<input type="checkbox" name="row', 1, '" value="', 1, '">',"")
+    cbind(Download=add_check, data_gsk[,input$show_vars,drop=FALSE])
+    
+  }, filter="top", rownames=FALSE
+  
+  )
   
   
 })
