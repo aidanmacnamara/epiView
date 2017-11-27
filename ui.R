@@ -101,13 +101,27 @@ ui <- fluidPage(
                         
                         sidebarPanel(
                           
+                          radioButtons('what_view', 'What method to use ...',
+                                       
+                                       list(
+                                         "Correlation"="correlation",
+                                         "Barchart"="barchart",
+                                         "Boxplot"="boxplot",
+                                         "Scatterplot"="scatter"
+                                       ),
+                                       
+                                       selected="correlation"
+                          ),
+                          
+                          
+                          
                           selectInput("cell_target_choice", label="Cell Target Choice", 
                                       choices = as.list(sort(cells)),
                                       multiple=TRUE,
-                                      selected=list("NHBE_BR1_Baseline")),
+                                      selected=list("NHBE_BR1_Baseline")
+                          ),
                           
                           # bsTooltip("cell_target_choice", "something", placement="bottom", trigger="hover", options=NULL),
-                          
                           helpText(
                             "Choose the target cell type"
                           ),
@@ -156,7 +170,7 @@ ui <- fluidPage(
                           h3(""),
                           h3(""),
                           
-                          actionButton("do_local", "Run"),
+                          actionButton("do_local", "Update Parameters"),
                           
                           width=2
                         ),
@@ -166,23 +180,25 @@ ui <- fluidPage(
                           h3(""),
                           h3(""),
                           
-                          column(width=4,
-                                 
-                                 plotOutput("local_view_1", height=350),
-                                 
-                                 h3(""),
-                                 h3(""),
-                                 
-                                 plotOutput("local_view_3", height=350)
-                                 
+                          plotOutput("local_view", height=700,
+                                     dblclick = "scatter_dblclick",
+                                     brush = brushOpts(
+                                       id="scatter_brush",
+                                       resetOnNew=TRUE
+                                     )
                           ),
                           
-                          column(width=8,
-                                 
-                                 plotOutput("local_view_2", height=700),
+                          verbatimTextOutput("plot_brushinfo"),
+                          
+                          column(width=4,
                                  sliderInput("label.size.local", NULL, min=1, max=10, value=4, step=1)
-                                 
                           ),
+                          
+                          column(width=4,
+                                 sliderInput("axis.label.size", NULL, min=10, max=50, value=30, step=5)
+                          ),
+                          
+                          verbatimTextOutput("info"),
                           
                           width=10
                         )
@@ -338,7 +354,14 @@ ui <- fluidPage(
              ),
              
              mainPanel(
+               
                dataTableOutput("gsk_data"),
+               
+               downloadButton(
+                 'download_gsk_data',
+                 'Download'
+               ),
+               
                width=10
              )
     )

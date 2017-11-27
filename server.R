@@ -84,7 +84,7 @@ shinyServer(function(input, output) {
   })
   
   
-  local_plot <- reactive({
+  local_plot <- eventReactive(input$do_local, {
     
     c_ix = match(input$cell_candidate_choice, rownames(local_choice()[[1]]$res))
     t_ix = match(input$cell_target_choice, rownames(local_choice()[[1]]$res))
@@ -94,23 +94,77 @@ shinyServer(function(input, output) {
   })
   
   
-  output$local_view_1 <- renderPlot({
-    local_plot()$plots[[1]] + geom_text_repel(aes(label=Cell), fontface="bold", size=input$label.size.local, force=0.5)
+  scatter_select <- eventReactive(input$do_local, {
+    
+    x_axis = "H3K27ac"
+    y_axis = "RNA"
+    all_ix = c(
+      match(input$cell_target_choice, rownames(local_choice()[[1]]$res)),
+      match(input$cell_candidate_choice, rownames(local_choice()[[1]]$res))
+    )
+    
+    to_plot = cbind(
+      melt(as.matrix(local_choice()[[which(names(local_choice())==x_axis)]]$res[all_ix,])),
+      as.numeric(as.matrix(local_choice()[[which(names(local_choice())==y_axis)]]$res[all_ix,]))
+    )
+    
+    names(to_plot) = c("Cell Type", "Gene", x_axis, y_axis)
+    return(to_plot)
+    
   })
   
   
-  output$local_view_2 <- renderPlot({
-    local_plot()$plots[[2]]
+  scatter_ranges <- reactiveValues(x=NULL, y=NULL)
+  
+  
+  observeEvent(input$scatter_dblclick, {
+    
+    brush <- input$scatter_brush
+    
+    if (!is.null(brush)) {
+      scatter_ranges$x <- c(brush$xmin, brush$xmax)
+      scatter_ranges$y <- c(brush$ymin, brush$ymax)
+      
+    } else {
+      scatter_ranges$x <- NULL
+      scatter_ranges$y <- NULL
+    }
+    
   })
   
   
-  output$local_view_3 <- renderPlot({
-    local_plot()$plots[[3]]
+  output$local_view <- renderPlot({
+    
+    if(input$what_view=="correlation") {
+      return(local_plot()$plots[[1]] + geom_text_repel(aes(label=Cell), fontface="bold", size=input$label.size.local, force=0.5) + theme_thesis(input$axis.label.size))
+    }
+
+    if(input$what_view=="barchart") {
+      return(local_plot()$plots[[2]] + theme_thesis(input$axis.label.size))
+    }
+
+    if(input$what_view=="boxplot") {
+      return(local_plot()$plots[[3]] + theme_thesis(input$axis.label.size))
+    }
+
+    if(input$what_view=="scatter") {
+      
+      to_plot = scatter_select()
+      to_plot[,3] = as.numeric(to_plot[,3])
+      to_plot[,4] = as.numeric(to_plot[,4])
+
+      if(!is.null(scatter_ranges$x)) {
+        to_plot = to_plot[(to_plot[,3] >= scatter_ranges$x[1] & to_plot[,3] <= scatter_ranges$x[2]) & (to_plot[,4] >= scatter_ranges$y[1] & to_plot[,4] <= scatter_ranges$y[2]),]
+      }
+      
+      return(ggplot(to_plot, aes_string(x=names(to_plot)[3], y=names(to_plot)[4])) + geom_point(size=5, shape=17, color="red", alpha=0.3) + theme_thesis(angle_45=FALSE) + facet_wrap(~`Cell Type`, nrow=2) + geom_text_repel(aes(label=Gene), fontface="bold", size=input$label.size.local, force=0.5))
+    }
+    
   })
   
   
-  output$local_view_4 <- renderPlot({
-    local_plot()$plots[[4]]
+  output$plot_brushinfo <- renderPrint({
+    str(input$scatter_brush)
   })
   
   
@@ -238,7 +292,16 @@ shinyServer(function(input, output) {
     cbind(Download=add_check, data_gsk[,input$show_vars,drop=FALSE])
     
   }, filter="top", rownames=FALSE
+  )
   
+  
+  output$download_gsk_data <- downloadHandler(
+    filename = function() { 
+      paste('data_gsk', '.csv', sep='') 
+    },
+    content = function(file) {
+      write_csv(data_gsk, file)
+    }
   )
   
   
