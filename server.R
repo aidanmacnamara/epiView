@@ -114,7 +114,7 @@ shinyServer(function(input, output) {
   })
   
   
-  scatter_ranges <- reactiveValues(x=NULL, y=NULL)
+  scatter_ranges <- reactiveValues(x=NULL, y=NULL, facet=NULL)
   
   
   observeEvent(input$scatter_dblclick, {
@@ -124,10 +124,12 @@ shinyServer(function(input, output) {
     if (!is.null(brush)) {
       scatter_ranges$x <- c(brush$xmin, brush$xmax)
       scatter_ranges$y <- c(brush$ymin, brush$ymax)
+      scatter_ranges$facet <- brush$panelvar1
       
     } else {
       scatter_ranges$x <- NULL
       scatter_ranges$y <- NULL
+      scatter_ranges$facet <- NULL
     }
     
   })
@@ -138,23 +140,27 @@ shinyServer(function(input, output) {
     if(input$what_view=="correlation") {
       return(local_plot()$plots[[1]] + geom_text_repel(aes(label=Cell), fontface="bold", size=input$label.size.local, force=0.5) + theme_thesis(input$axis.label.size))
     }
-
+    
     if(input$what_view=="barchart") {
       return(local_plot()$plots[[2]] + theme_thesis(input$axis.label.size))
     }
-
+    
     if(input$what_view=="boxplot") {
       return(local_plot()$plots[[3]] + theme_thesis(input$axis.label.size))
     }
-
+    
     if(input$what_view=="scatter") {
       
       to_plot = scatter_select()
       to_plot[,3] = as.numeric(to_plot[,3])
       to_plot[,4] = as.numeric(to_plot[,4])
-
+      
       if(!is.null(scatter_ranges$x)) {
-        to_plot = to_plot[(to_plot[,3] >= scatter_ranges$x[1] & to_plot[,3] <= scatter_ranges$x[2]) & (to_plot[,4] >= scatter_ranges$y[1] & to_plot[,4] <= scatter_ranges$y[2]),]
+        print(to_plot)
+        my_genes = to_plot$Gene[(to_plot[,3] >= scatter_ranges$x[1] & to_plot[,3] <= scatter_ranges$x[2]) & (to_plot[,4] >= scatter_ranges$y[1] & to_plot[,4] <= scatter_ranges$y[2]) & (to_plot[,1]==scatter_ranges$facet)]
+        print(my_genes)
+        to_plot = dplyr::filter(to_plot, Gene %in% my_genes)
+        print(to_plot)
       }
       
       return(ggplot(to_plot, aes_string(x=names(to_plot)[3], y=names(to_plot)[4])) + geom_point(size=5, shape=17, color="red", alpha=0.3) + theme_thesis(angle_45=FALSE) + facet_wrap(~`Cell Type`, nrow=2) + geom_text_repel(aes(label=Gene), fontface="bold", size=input$label.size.local, force=0.5))
@@ -199,7 +205,7 @@ shinyServer(function(input, output) {
     dat_out$color = factor(dat_out$color)
     dat_out = tbl_df(dat_out)
     
-    ggplot(dat_out, aes_string(names(dat_out)[2], names(dat_out)[3])) + geom_point(size=2, aes(color=color, alpha=color)) + theme_thesis() + scale_color_discrete(guide=FALSE) + scale_alpha_manual(guide=FALSE, values=c(0.3,0.8))
+    ggplot(dat_out, aes_string(names(dat_out)[2], names(dat_out)[3])) + geom_point(size=2, aes(color=color, alpha=color)) + theme_thesis(angle_45=FALSE) + scale_color_discrete(guide=FALSE) + scale_alpha_manual(guide=FALSE, values=c(0.3,0.8))
     
   })
   
@@ -210,7 +216,11 @@ shinyServer(function(input, output) {
   
   
   output$brush_info <- renderPrint({
-    selected_data()
+    if(dim(selected_data())[1]) {
+      return(selected_data())
+    } else {
+      return("No genes selected ...")
+    }
   })
   
   
@@ -224,16 +234,41 @@ shinyServer(function(input, output) {
   )
   
   
-  output$GSEA <- renderPrint({
+  enrichment_results <- reactive({
     
-    # gsea_input = dplyr::arrange(data.frame(gene=x$Gene, score=unlist(x[,2])*unlist(x[,3])), desc(score))
-    # rownames(gsea_input) = gsea_input$gene
-    # gsea_input = as.matrix(gsea_input[,2,drop=FALSE])
+    if(dim(selected_data())[1]) {
+      
+      my_genes = selected_data()$Gene
+      res = enrichment_test(genes=my_genes, gene_sets=msig_go_bp, genes_ref=unique(unlist(msig_go_bp)), verbose=FALSE)
+      return(res)
+      
+    } else {
+      
+      return(NULL)
+      
+    }
+  })
+  
+  
+  output$enrichment <- renderPrint({
     
-    return(data.frame(foo=1:10, bar=LETTERS[1:10]))
+    if(!is.null(enrichment_results())) {
+      return(enrichment_results())
+    } else {
+      return("Enrichment not run ...")
+    }
     
   })
   
+  
+  output$download_enrichment <- downloadHandler(
+    filename = function() { 
+      paste('enrichment_results', '.csv', sep='') 
+    },
+    content = function(file) {
+      write_csv(enrichment_results(), file)
+    }
+  )
   
   output$sushi<- renderPlot({
     

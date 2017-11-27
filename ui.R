@@ -27,7 +27,7 @@ ui <- fluidPage(
              sidebarPanel(
                
                helpText(
-                 "What projects to display:"
+                 "This is an overview of all the tissue-types profiled as part of epiChoose. As well as the 6 projects (detailed in 'Introduction'), relevant cell lines and cell types have been imported from Blueprint and ENCODE. Either PCA or MDS can be used to examine genome-wide relatedness between the cell types."
                ),
                
                checkboxGroupInput("project_choice", "Project Choice:",
@@ -43,6 +43,9 @@ ui <- fluidPage(
                                     "ENCODE"="ENCODE"
                                   ), selected="All"
                ),
+               
+               bsTooltip("project_choice", "Choose 1 or more projects to analyse with PCA/MDS", placement="bottom", trigger="hover", options=NULL),
+               
                
                h3(""),
                h3(""),
@@ -101,6 +104,8 @@ ui <- fluidPage(
                         
                         sidebarPanel(
                           
+                          helpText("This tab enables gene/gene-set analysis of cell line / cell type differences. More details about each parameter can be viewed on mouse-over. New plots are generated only when 'Update Parameters' (at bottom) is selected."),
+                          
                           radioButtons('what_view', 'What method to use ...',
                                        
                                        list(
@@ -113,7 +118,10 @@ ui <- fluidPage(
                                        selected="correlation"
                           ),
                           
-                          
+                          radio_tool_tip(id="what_view", choice="correlation", title="This plots the distance (correlation) between possible cell models and the target cells. See methods in the introduction tab for more details.", placement="right", trigger="hover"),
+                          radio_tool_tip(id="what_view", choice="barchart", title="This plots the absolute values for each data type across all cell selections (cell models and target cells). See methods in the introduction tab for more details.", placement="right", trigger="hover"),
+                          radio_tool_tip(id="what_view", choice="boxplot", title="Boxplots of the absolute values for each data type across all cell selections (cell models and target cells).", placement="right", trigger="hover"),
+                          radio_tool_tip(id="what_view", choice="scatter", title="A scatter plot of selected data types of absolute values across all cell selections (cell models and target cells).", placement="right", trigger="hover"),
                           
                           selectInput("cell_target_choice", label="Cell Target Choice", 
                                       choices = as.list(sort(cells)),
@@ -121,10 +129,7 @@ ui <- fluidPage(
                                       selected=list("NHBE_BR1_Baseline")
                           ),
                           
-                          # bsTooltip("cell_target_choice", "something", placement="bottom", trigger="hover", options=NULL),
-                          helpText(
-                            "Choose the target cell type"
-                          ),
+                          bsTooltip("cell_target_choice", "Choose the target cell (i.e. the cell type / cell line that the other cell models will be measured against).", placement="bottom", trigger="hover", options=NULL),
                           
                           h3(""),
                           h3(""),
@@ -140,9 +145,7 @@ ui <- fluidPage(
                                         "A549_Broad"
                                       )),
                           
-                          helpText(
-                            "Choose the possible cell models"
-                          ),
+                          bsTooltip("cell_candidate_choice", "Choose the possible cell models for the chosen target.", placement="bottom", trigger="hover", options=NULL),
                           
                           h3(""),
                           h3(""),
@@ -151,9 +154,7 @@ ui <- fluidPage(
                                       choices = as.list(sort(genes)),
                                       multiple=TRUE),
                           
-                          helpText(
-                            "Choose the genes over which to make the comparison"
-                          ),
+                          bsTooltip("gene_choice", "Choose the gene(s) over which to make the comparison. Multiple selections can be made here, or gene sets can be chosen below.", placement="bottom", trigger="hover", options=NULL),
                           
                           h3(""),
                           h3(""),
@@ -163,16 +164,14 @@ ui <- fluidPage(
                                       selected = list("GLYCERALDEHYDE 3 PHOSPHATE METABOLIC PROCESS"),
                                       multiple=TRUE),
                           
-                          helpText(
-                            "Choose the GO biological process over which to make the comparison"
-                          ),
-                          
                           h3(""),
                           h3(""),
                           
                           actionButton("do_local", "Update Parameters"),
                           
-                          width=2
+                          bsTooltip("do_local", "Generates plot after parameters have been chosen", placement="bottom", trigger="hover", options=NULL),
+                          
+                          width=3
                         ),
                         
                         mainPanel(
@@ -188,19 +187,19 @@ ui <- fluidPage(
                                      )
                           ),
                           
-                          verbatimTextOutput("plot_brushinfo"),
+                          # verbatimTextOutput("plot_brushinfo"),
                           
                           column(width=4,
-                                 sliderInput("label.size.local", NULL, min=1, max=10, value=4, step=1)
+                                 sliderInput("label.size.local", NULL, min=1, max=10, value=4, step=1),
+                                 helpText("Adjust point-label size")
                           ),
                           
                           column(width=4,
-                                 sliderInput("axis.label.size", NULL, min=10, max=50, value=30, step=5)
+                                 sliderInput("axis.label.size", NULL, min=10, max=50, value=30, step=5),
+                                 helpText("Adjust axis labels and titles")
                           ),
-                          
-                          verbatimTextOutput("info"),
-                          
-                          width=10
+                        
+                          width=9
                         )
                         
                ),
@@ -256,7 +255,7 @@ ui <- fluidPage(
                           ),
                           
                           column(width=5,
-                                 h4("Brushed points"),
+                                 h4("Selected genes"),
                                  verbatimTextOutput("brush_info"),
                                  
                                  downloadButton(
@@ -268,10 +267,10 @@ ui <- fluidPage(
                                  h3(""),
                                  
                                  h4("Enrichment Results"),
-                                 verbatimTextOutput("GSEA"),
+                                 verbatimTextOutput("enrichment"),
                                  
                                  downloadButton(
-                                   'download_gsea',
+                                   'download_enrichment',
                                    'Download'
                                  )
                           )
@@ -346,10 +345,13 @@ ui <- fluidPage(
     tabPanel("Download",
              
              sidebarPanel(
+               
+               helpText("This table gives the metadata for each GSK sample profiled as part of epiChoose."),
+               
                checkboxGroupInput('show_vars', 'Columns to show:',
                                   names(data_gsk),
                                   selected=names(data_gsk)[1:9]),
-               textInput("collection_txt", label="Foo"),
+               textInput("collection_txt", label="To add"),
                width=2
              ),
              
