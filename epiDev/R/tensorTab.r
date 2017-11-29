@@ -10,15 +10,10 @@
 
 tensorTab=function(id,input,output,ui=T){
 
-  imageHeight=600
-
-
   ns=NS(id)
 
   # make tag-helper functions
-
-
-
+  
   data.id="data"
   trans.id="trans"
   legend.id="legend"
@@ -35,7 +30,8 @@ tensorTab=function(id,input,output,ui=T){
 
   ns.cp.detail=makeIdTagFunction(paste(cp.id,"detail",sep="-"))
 
-
+  # the active code
+  
   if (ui){
     tabsetPanel(
       tensorDataPanel(ns(data.id),input,output),
@@ -44,7 +40,7 @@ tensorTab=function(id,input,output,ui=T){
       colourLegendPanel(ns(legend.id),input,output)
     )
   } else {
-    cat("server side tensorTab\n")
+    cat("... entering server side tensorTab\n")
 
     # >>> data services
 

@@ -11,11 +11,9 @@
 tensorDataPanel=function(id,input,output,ui=T){
 
   ns=NS(id)
-  cat("id '",ns("*"),"' in tensorDataPanel\n")
 
   if (ui){
     # UI mode
-
 
     tabPanel("data",
              tabsetPanel(tabPanel("marks",
@@ -30,11 +28,8 @@ tensorDataPanel=function(id,input,output,ui=T){
                       tableOutput(ns("mark-project-summary"))
              )
              ))
-
   } else {
     # server mode
     stop("server mode not currently implemented")
   }
-
-
 }
