@@ -4,14 +4,19 @@
 \alias{tensorTab}
 \title{top level wrapper for a tensor tab}
 \usage{
-tensorTab(input, output, ui = T)
+tensorTab(id, input, output, ui = T)
 }
 \arguments{
+\item{id}{prefix for Shiny id's}
+
 \item{input}{Shiny 'input' list}
 
 \item{output}{Shiny 'output' list}
 
 \item{ui}{if TRUE defines the UI component, o/w the server}
+}
+\value{
+standard Shiny value
 }
 \description{
 top level wrapper for a tensor tab

@@ -9,6 +9,9 @@ require(Sushi)
 require(stringr)
 require(ggplot2)
 
+# added by David
+require(epiDev)
+
 # global objects
 
 load("dat.RData") # main data object
