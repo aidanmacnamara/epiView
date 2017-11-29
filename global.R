@@ -10,6 +10,7 @@ require(stringr)
 require(ggplot2)
 require(DT)
 require(readxl)
+require(shinyBS)
 
 
 # global objects

@@ -138,11 +138,22 @@ shinyServer(function(input, output) {
   output$local_view <- renderPlot({
     
     if(input$what_view=="correlation") {
-      return(local_plot()$plots[[1]] + geom_text_repel(aes(label=Cell), fontface="bold", size=input$label.size.local, force=0.5) + theme_thesis(input$axis.label.size))
+      return(local_plot()$plots[[1]] + geom_text_repel(aes(label=Cell), fontface="bold", size=input$label.size.local, force=0.5, show.legend=FALSE) + theme_thesis(input$axis.label.size))
     }
     
     if(input$what_view=="barchart") {
-      return(local_plot()$plots[[2]] + theme_thesis(input$axis.label.size))
+      
+      if(!is.null(scatter_ranges$facet)) {
+        
+        x = local_choice()[[which(names(local_choice())==scatter_ranges$facet)]]$res
+        y = melt(as.matrix(x))
+        names(y) = c("Cell Line", "Gene", "Score")
+        return(ggplot(y, aes(x=Gene, y=Score)) + geom_bar(aes(fill=`Cell Line`), position="dodge", stat="identity") + theme_thesis(input$axis.label.size))
+        
+      } else {
+        return(local_plot()$plots[[2]] + theme_thesis(input$axis.label.size))
+      }
+      
     }
     
     if(input$what_view=="boxplot") {
@@ -240,6 +251,12 @@ shinyServer(function(input, output) {
       
       my_genes = selected_data()$Gene
       res = enrichment_test(genes=my_genes, gene_sets=msig_go_bp, genes_ref=unique(unlist(msig_go_bp)), verbose=FALSE)
+      
+      # gsea
+      # see https://www.biostars.org/p/113680/
+      # selection_ranked = dplyr::arrange(data.frame(gene=selected_data()$Gene, score=unlist(selected_data()[,2])*unlist(selected_data()[,3])), desc(score))
+      # global_ranked = dplyr::arrange(data.frame(gene=mode_choice()$Gene, score=unlist(mode_choice()[,2])*unlist(mode_choice()[,3])), desc(score))
+      
       return(res)
       
     } else {
