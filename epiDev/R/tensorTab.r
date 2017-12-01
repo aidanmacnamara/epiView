@@ -45,9 +45,10 @@ tensorTab=function(id,input,output,ui=T){
     # >>> data services
 
     # fetches a copy of the full data from file
+    # fetches a copy of the full data from file
 
     D0=reactive({
-      load("../gc.rda")
+      load("gc.rda")
       a_gc
     })
 

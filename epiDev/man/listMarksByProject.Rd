@@ -2,13 +2,16 @@
 % Please edit documentation in R/listMarksByProject.r
 \name{listMarksByProject}
 \alias{listMarksByProject}
-\title{lists availablity of markers by project}
+\title{DEFUNCT lists availablity of markers by project}
 \usage{
 listMarksByProject(x)
 }
 \arguments{
-\item{x}{}
+\item{x}{a data object returned by Aidan's global_choice()}
+}
+\value{
+a charactor vector with the names of the contained marks
 }
 \description{
-lists availablity of markers by project
+Think this no longer works - just gives a list of marks ignorning projects
 }
