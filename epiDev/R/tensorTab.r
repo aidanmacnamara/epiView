@@ -6,6 +6,13 @@
 #' @param ui if TRUE defines the UI component, o/w the server
 #'
 #' @return standard Shiny value
+#'
+#' @import shiny
+#' @import ggplot2
+#' @import rTensor
+#' @import plyr
+#' @import reshape
+#'
 #' @export
 
 tensorTab=function(id,input,output,ui=T){
