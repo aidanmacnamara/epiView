@@ -13,7 +13,7 @@ tensorTab=function(id,input,output,ui=T){
   ns=NS(id)
 
   # make tag-helper functions
-  
+
   data.id="data"
   trans.id="trans"
   legend.id="legend"
@@ -31,7 +31,7 @@ tensorTab=function(id,input,output,ui=T){
   ns.cp.detail=makeIdTagFunction(paste(cp.id,"detail",sep="-"))
 
   # the active code
-  
+
   if (ui){
     tabsetPanel(
       tensorDataPanel(ns(data.id),input,output),
@@ -250,7 +250,7 @@ tensorTab=function(id,input,output,ui=T){
                        scale.x=1,
                        scale.y=1)
     },
-    height = imageHeight)
+    height = tensorDataOptions("image.height"))
 
     output[[ns.cp.detail("title")]]=renderText({
 
