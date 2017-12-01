@@ -179,26 +179,51 @@ ui <- fluidPage(
                           h3(""),
                           h3(""),
                           
-                          plotOutput("local_view", height=700,
-                                     dblclick = "scatter_dblclick",
-                                     brush = brushOpts(
-                                       id="scatter_brush",
-                                       resetOnNew=TRUE
-                                     )
+                          column(width=10,
+                                 plotOutput("local_view", height=700,
+                                            dblclick = "scatter_dblclick",
+                                            brush = brushOpts(
+                                              id="scatter_brush",
+                                              resetOnNew=TRUE
+                                            )
+                                 ),
+                                 
+                                 verbatimTextOutput("plot_brushinfo"),
+                                 
+                                 column(width=4,
+                                        sliderInput("label.size.local", NULL, min=1, max=10, value=4, step=1),
+                                        helpText("Adjust point-label size")
+                                 ),
+                                 
+                                 column(width=4,
+                                        sliderInput("axis.label.size", NULL, min=10, max=50, value=30, step=5),
+                                        helpText("Adjust axis labels and titles")
+                                 )
                           ),
                           
-                          # verbatimTextOutput("plot_brushinfo"),
-                          
-                          column(width=4,
-                                 sliderInput("label.size.local", NULL, min=1, max=10, value=4, step=1),
-                                 helpText("Adjust point-label size")
+                          column(width=2,
+                                 
+                                 conditionalPanel(
+                                   condition = "input.what_view=='scatter'",
+                                   
+                                   selectInput("scatter_x_axis", label="X-axis", 
+                                               choices = as.list(sort(names(dat))),
+                                               multiple=FALSE,
+                                               selected=list("H3K27ac")),
+                                   
+                                   selectInput("scatter_y_axis", label="Y-axis", 
+                                               choices = as.list(c(sort(names(dat)), "Same as x-axis")),
+                                               multiple=FALSE,
+                                               selected=list("RNA")),
+                                   
+                                   checkboxInput("show_gene_labels", "Show gene labels", FALSE),
+                                   
+                                   h4("Selected genes"),
+                                   verbatimTextOutput("brush_info_scatter")
+                                   
+                                 )
                           ),
                           
-                          column(width=4,
-                                 sliderInput("axis.label.size", NULL, min=10, max=50, value=30, step=5),
-                                 helpText("Adjust axis labels and titles")
-                          ),
-                        
                           width=9
                         )
                         

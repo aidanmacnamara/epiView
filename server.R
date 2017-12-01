@@ -96,19 +96,35 @@ shinyServer(function(input, output) {
   
   scatter_select <- eventReactive(input$do_local, {
     
-    x_axis = "H3K27ac"
-    y_axis = "RNA"
+    x_axis = input$scatter_x_axis
+    y_axis = input$scatter_y_axis
+    
+    # if x_axis or y_axis is null, plot cell types vs. cell types for single data type
+    
     all_ix = c(
       match(input$cell_target_choice, rownames(local_choice()[[1]]$res)),
       match(input$cell_candidate_choice, rownames(local_choice()[[1]]$res))
     )
     
-    to_plot = cbind(
-      melt(as.matrix(local_choice()[[which(names(local_choice())==x_axis)]]$res[all_ix,])),
-      as.numeric(as.matrix(local_choice()[[which(names(local_choice())==y_axis)]]$res[all_ix,]))
-    )
+    if(y_axis=="Same as x-axis") {
+      
+      to_plot = melt(as.matrix(local_choice()[[which(names(local_choice())==x_axis)]]$res[all_ix,]))
+      
+      u_ct = unique(to_plot[,1])
+      combs = combn(1:length(u_ct), 2)
+      to_plot = do.call("rbind", lapply(as.list(1:dim(combs)[2]), get_comb, to_plot, u_ct, combs))
+      names(to_plot) = c("Comparison","Gene","X","Y")
+      
+    } else {
+      
+      to_plot = cbind(
+        melt(as.matrix(local_choice()[[which(names(local_choice())==x_axis)]]$res[all_ix,])),
+        as.numeric(as.matrix(local_choice()[[which(names(local_choice())==y_axis)]]$res[all_ix,]))
+      )
+      names(to_plot) = c("Cell Type", "Gene", x_axis, y_axis)
+      
+    }
     
-    names(to_plot) = c("Cell Type", "Gene", x_axis, y_axis)
     return(to_plot)
     
   })
@@ -163,24 +179,45 @@ shinyServer(function(input, output) {
     if(input$what_view=="scatter") {
       
       to_plot = scatter_select()
-      to_plot[,3] = as.numeric(to_plot[,3])
-      to_plot[,4] = as.numeric(to_plot[,4])
+      # to_plot[,3] = as.numeric(to_plot[,3])
+      # to_plot[,4] = as.numeric(to_plot[,4])
       
       if(!is.null(scatter_ranges$x)) {
-        print(to_plot)
         my_genes = to_plot$Gene[(to_plot[,3] >= scatter_ranges$x[1] & to_plot[,3] <= scatter_ranges$x[2]) & (to_plot[,4] >= scatter_ranges$y[1] & to_plot[,4] <= scatter_ranges$y[2]) & (to_plot[,1]==scatter_ranges$facet)]
-        print(my_genes)
         to_plot = dplyr::filter(to_plot, Gene %in% my_genes)
-        print(to_plot)
       }
       
-      return(ggplot(to_plot, aes_string(x=names(to_plot)[3], y=names(to_plot)[4])) + geom_point(size=5, shape=17, color="red", alpha=0.3) + theme_thesis(angle_45=FALSE) + facet_wrap(~`Cell Type`, nrow=2) + geom_text_repel(aes(label=Gene), fontface="bold", size=input$label.size.local, force=0.5))
+      if(names(to_plot)[1]=="Cell Type") {
+        
+        return(ggplot(to_plot, aes_string(x=names(to_plot)[3], y=names(to_plot)[4])) + geom_point(size=5, shape=17, color="red", alpha=0.3) + theme_thesis(angle_45=FALSE) + facet_wrap(~`Cell Type`, nrow=2) + geom_text_repel(aes(label=Gene), fontface="bold", size=input$label.size.local, force=0.5))
+        
+      } else {
+        
+        # to_plot_spread = spread(to_plot, `Cell Type`, Assay)
+        # return(ggpairs(to_plot_spread, columns=2:dim(to_plot_spread)[2]) + theme_thesis(input$axis.label.size, angle_45=FALSE))
+        return(ggplot(to_plot, aes(x=X, y=Y)) + geom_point(size=5, shape=17, color="red", alpha=0.3) + theme_thesis(base_size=input$axis.label.size, angle_45=FALSE) + facet_wrap(~Comparison, nrow=3) + xlab("") + ylab("")) 
+        
+      }
     }
     
   })
   
   
-  output$plot_brushinfo <- renderPrint({
+  selected_scatter <- reactive({ # gets selected genes from scatter plot
+    brushedPoints(scatter_select(), input$scatter_brush)
+  })
+  
+  
+  output$brush_info_scatter <- renderPrint({ # displays selected genes from scatter plot
+    if(dim(selected_scatter())[1]) {
+      return(tbl_df(selected_scatter()$Gene[!is.na(selected_scatter()$Gene)]))
+    } else {
+      return("No genes selected ...")
+    }
+  })
+  
+  
+  output$plot_brushinfo <- renderPrint({ # for debugging, shows output from brush
     str(input$scatter_brush)
   })
   

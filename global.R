@@ -7,10 +7,10 @@ require(biomaRt)
 require(rtracklayer)
 require(Sushi)
 require(stringr)
-require(ggplot2)
-require(DT)
 require(readxl)
 require(shinyBS)
+require(GGally)
+require(DT)
 
 
 # global objects
