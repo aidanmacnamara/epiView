@@ -182,6 +182,7 @@ ui <- fluidPage(
                           column(width=10,
                                  plotOutput("local_view", height=700,
                                             dblclick = "scatter_dblclick",
+                                            click = "scatter_click",
                                             brush = brushOpts(
                                               id="scatter_brush",
                                               resetOnNew=TRUE
@@ -352,6 +353,11 @@ ui <- fluidPage(
                             "Browser window around gene."
                           ),
                           
+                          h3(""),
+                          h3(""),
+                          
+                          actionButton("do_sushi", "Show tracks"),
+                          
                           width=2
                           
                         ),
@@ -391,6 +397,10 @@ ui <- fluidPage(
                
                width=10
              )
+    ),
+    
+    tabPanel("Data Integration"
+             # tensorTab("TV", input, output, ui=T)
     )
     
   )

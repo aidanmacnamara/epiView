@@ -6,6 +6,9 @@
 shinyServer(function(input, output) {
   
   
+  # tensorTab("TV", input, output, ui=F)
+  
+  
   global_choice = eventReactive(input$do_global, {
     validate(
       need(input$project_choice != "", 'Please select at least one project to view.')
@@ -32,6 +35,9 @@ shinyServer(function(input, output) {
   
   
   global_plot <- reactive({
+    
+    # a_gc <<- global_choice() # make global for david's code
+    # save(a_gc, file="a_gc.rda")
     
     single_labels = rownames(global_choice()$tmp[[1]]$res)
     group_labels = global_choice()$tmp[[1]]$annot$Project
@@ -189,14 +195,23 @@ shinyServer(function(input, output) {
       
       if(names(to_plot)[1]=="Cell Type") {
         
-        return(ggplot(to_plot, aes_string(x=names(to_plot)[3], y=names(to_plot)[4])) + geom_point(size=5, shape=17, color="red", alpha=0.3) + theme_thesis(angle_45=FALSE) + facet_wrap(~`Cell Type`, nrow=2) + geom_text_repel(aes(label=Gene), fontface="bold", size=input$label.size.local, force=0.5))
+        s_1 = ggplot(to_plot, aes_string(x=names(to_plot)[3], y=names(to_plot)[4])) + geom_point(size=5, shape=17, color="red", alpha=0.3) + theme_thesis(angle_45=FALSE) + facet_wrap(~`Cell Type`, nrow=2)
+        
+        if(input$show_gene_labels) {
+          return(s_1 + geom_text_repel(aes(label=Gene), fontface="bold", size=input$label.size.local, force=0.5))
+        } else {
+          return(s_1)
+        }
         
       } else {
         
-        # to_plot_spread = spread(to_plot, `Cell Type`, Assay)
-        # return(ggpairs(to_plot_spread, columns=2:dim(to_plot_spread)[2]) + theme_thesis(input$axis.label.size, angle_45=FALSE))
-        return(ggplot(to_plot, aes(x=X, y=Y)) + geom_point(size=5, shape=17, color="red", alpha=0.3) + theme_thesis(base_size=input$axis.label.size, angle_45=FALSE) + facet_wrap(~Comparison, nrow=3) + xlab("") + ylab("")) 
+        s_1 = ggplot(to_plot, aes(x=X, y=Y)) + geom_point(size=5, shape=17, color="red", alpha=0.3) + theme_thesis(base_size=input$axis.label.size, angle_45=FALSE) + facet_wrap(~Comparison, nrow=3) + xlab("") + ylab("")
         
+        if(input$show_gene_labels) {
+          return(s_1 + geom_text_repel(aes(label=Gene), fontface="bold", size=input$label.size.local, force=0.5))
+        } else {
+          return(s_1)
+        }
       }
     }
     
@@ -324,7 +339,8 @@ shinyServer(function(input, output) {
     }
   )
   
-  output$sushi<- renderPlot({
+  
+  sushi_p <- eventReactive(input$do_sushi, { # get sushi plot ready on button click
     
     sample_ix = sapply(input$cell_browser_choice, function(x) which(rownames(dat[[1]]$res)==x))
     data_type = input$data_type_choice
@@ -371,6 +387,11 @@ shinyServer(function(input, output) {
       
     }
     
+  })
+  
+  
+  output$sushi <- renderPlot({ # plot sushi plot
+    sushi_p()
   })
   
   
