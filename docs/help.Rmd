@@ -7,7 +7,15 @@ output: html_document
 
 ![](images/overview_1.png)
 
-epiChoose is an application for quantifying the relatedness between cell lines and primary cells. To get started straight away, choose the **Data Overview** and **Data Exploration** tabs. For some background, please read below ...
+epiChoose is an application for quantifying the relatedness between cell lines and primary cells. For a **Quick Start**:
+
+1. See what cell lines and primary cells have been profiled in **Data Overview**.
+2. Explore relatedness between samples using specific gene selections (gene lists, ontologies, etc.) using **Data Exploration**.
+3. Select data type and samples to download (BAM or Bigwig) in **Download**.
+4. Explore integrating across epigenetic and expression data to define relatedness in **Data Integration**.
+5. Select different gene mapping methods for the epigenetic data in **Advanced**.
+
+For some background, please read below ...
 
 ***
 ## Overview ##

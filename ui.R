@@ -189,7 +189,7 @@ ui <- fluidPage(
                                             )
                                  ),
                                  
-                                 verbatimTextOutput("plot_brushinfo"),
+                                 # verbatimTextOutput("plot_brushinfo"),
                                  
                                  column(width=4,
                                         sliderInput("label.size.local", NULL, min=1, max=10, value=4, step=1),
@@ -401,6 +401,88 @@ ui <- fluidPage(
     
     tabPanel("Data Integration"
              # tensorTab("TV", input, output, ui=T)
+    ),
+    
+    tabPanel("Advanced",
+             
+             fluidRow(
+               
+               column(width=6,
+                      img(src="overview_4.png", align="left")
+               ),
+               
+               column(width=6)
+               
+             ),
+             
+             h3(""),
+             h3(""),
+             
+             column(width=2,
+                    
+                    selectInput("h3k27ac_summ", label="Gene-mapping for H3K27ac", 
+                                choices = list(
+                                  "Max across gene body"="max",
+                                  "TSS only"="tss",
+                                  "Sum of regions across gene body"="sum"
+                                  
+                                ),
+                                multiple=FALSE,
+                                selected=list("max_gb"))
+             ),
+             
+             column(width=2,
+                    
+                    selectInput("h3k4me3_summ", label="Gene-mapping for H3K4me3", 
+                                choices = list(
+                                  "Max across gene body"="max",
+                                  "TSS only"="tss",
+                                  "Sum of regions across gene body"="sum"
+                                  
+                                ),
+                                multiple=FALSE,
+                                selected=list("max_gb"))
+             ),
+             
+             column(width=2,
+                    
+                    selectInput("h3k27me3_summ", label="Gene-mapping for H3K27me3", 
+                                choices = list(
+                                  "Max across gene body"="max",
+                                  "TSS only"="tss",
+                                  "Sum of regions across gene body"="sum"
+                                  
+                                ),
+                                multiple=FALSE,
+                                selected=list("max_gb"))
+             ),
+             
+             column(width=2,
+                    
+                    selectInput("atac_summ", label="Gene-mapping for ATAC", 
+                                choices = list(
+                                  "Max across gene body"="max",
+                                  "TSS only"="tss",
+                                  "Sum of regions across gene body"="sum"
+                                  
+                                ),
+                                multiple=FALSE,
+                                selected=list("sum"))
+             ),
+             
+             column(width=2,
+                    
+                    selectInput("ctcf_summ", label="Gene-mapping for CTCF", 
+                                choices = list(
+                                  "Max across gene body"="max",
+                                  "TSS only"="tss",
+                                  "Sum of regions across gene body"="sum"
+                                  
+                                ),
+                                multiple=FALSE,
+                                selected=list("sum"))
+             )
+             
     )
     
   )

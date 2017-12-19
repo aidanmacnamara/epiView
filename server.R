@@ -37,7 +37,7 @@ shinyServer(function(input, output) {
   global_plot <- reactive({
     
     # a_gc <<- global_choice() # make global for david's code
-    # save(a_gc, file="a_gc.rda")
+    # save(a_gc, file="gc.rda")
     
     single_labels = rownames(global_choice()$tmp[[1]]$res)
     group_labels = global_choice()$tmp[[1]]$annot$Project
@@ -185,8 +185,6 @@ shinyServer(function(input, output) {
     if(input$what_view=="scatter") {
       
       to_plot = scatter_select()
-      # to_plot[,3] = as.numeric(to_plot[,3])
-      # to_plot[,4] = as.numeric(to_plot[,4])
       
       if(!is.null(scatter_ranges$x)) {
         my_genes = to_plot$Gene[(to_plot[,3] >= scatter_ranges$x[1] & to_plot[,3] <= scatter_ranges$x[2]) & (to_plot[,4] >= scatter_ranges$y[1] & to_plot[,4] <= scatter_ranges$y[2]) & (to_plot[,1]==scatter_ranges$facet)]
@@ -195,7 +193,7 @@ shinyServer(function(input, output) {
       
       if(names(to_plot)[1]=="Cell Type") {
         
-        s_1 = ggplot(to_plot, aes_string(x=names(to_plot)[3], y=names(to_plot)[4])) + geom_point(size=5, shape=17, color="red", alpha=0.3) + theme_thesis(angle_45=FALSE) + facet_wrap(~`Cell Type`, nrow=2)
+        s_1 = ggplot(to_plot, aes_string(x=names(to_plot)[3], y=names(to_plot)[4])) + geom_point(size=5, shape=17, color="red", alpha=0.3) + theme_thesis(angle_45=FALSE) + facet_wrap(~`Cell Type`, ncol=2)
         
         if(input$show_gene_labels) {
           return(s_1 + geom_text_repel(aes(label=Gene), fontface="bold", size=input$label.size.local, force=0.5))
@@ -205,7 +203,7 @@ shinyServer(function(input, output) {
         
       } else {
         
-        s_1 = ggplot(to_plot, aes(x=X, y=Y)) + geom_point(size=5, shape=17, color="red", alpha=0.3) + theme_thesis(base_size=input$axis.label.size, angle_45=FALSE) + facet_wrap(~Comparison, nrow=3) + xlab("") + ylab("")
+        s_1 = ggplot(to_plot, aes(x=X, y=Y)) + geom_point(size=5, shape=17, color="red", alpha=0.3) + theme_thesis(base_size=input$axis.label.size, angle_45=FALSE) + facet_wrap(~Comparison, ncol=2) + xlab("") + ylab("") + geom_abline(slope=1, color="red", alpha=0.5)
         
         if(input$show_gene_labels) {
           return(s_1 + geom_text_repel(aes(label=Gene), fontface="bold", size=input$label.size.local, force=0.5))

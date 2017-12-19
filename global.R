@@ -9,8 +9,10 @@ require(Sushi)
 require(stringr)
 require(readxl)
 require(shinyBS)
-require(GGally)
 require(DT)
+# require(plyr)
+# require(rTensor)
+# require(reshape)
 
 
 # global objects
