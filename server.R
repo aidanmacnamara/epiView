@@ -78,8 +78,6 @@ shinyServer(function(input, output) {
 
     }
     
-    # print(input$cell.type.select)
-    
     pca_data = prep_for_plot(global_sel, annot_1=group_labels, annot_2=single_labels, marks=names(global_sel), plot_type=global_choice()$mds_type)
     pca_data$annot_1 = paste("Project", pca_data$annot_1)
     return(pca_data)
