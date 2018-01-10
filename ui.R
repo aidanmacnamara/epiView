@@ -1,8 +1,8 @@
 
 # require(shinyBS)
 
-cells = rownames(dat[[1]]$res)
-genes = colnames(dat[[1]]$res)
+cells = rownames(dat_all$max[[1]]$res)
+genes = colnames(dat_all$max[[1]]$res)
 # names(msig_go_bp) = str_replace(str_replace_all(names(msig_go_bp), "_", " "), "GO\\s+", "")
 
 ui <- fluidPage(
@@ -61,6 +61,14 @@ ui <- fluidPage(
                h3(""),
                h3(""),
                
+               
+               textInput("cell.type.select",
+                         label="Filter for these cell types:",
+                         NULL, value="macrophage, t cell"),
+               
+               h3(""),
+               h3(""),
+               
                actionButton("do_global", "Run"),
                
                width=2
@@ -77,7 +85,7 @@ ui <- fluidPage(
                column(width=3,
                       
                       selectInput("data_type", label="Data Type Choice", 
-                                  choices = as.list(c("All", sort(names(dat)))),
+                                  choices = as.list(c("All", sort(names(dat_all$max)))),
                                   multiple=FALSE,
                                   selected=list("All")
                       )
@@ -190,15 +198,23 @@ ui <- fluidPage(
                                  ),
                                  
                                  # verbatimTextOutput("plot_brushinfo"),
-                                 
-                                 column(width=4,
-                                        sliderInput("label.size.local", NULL, min=1, max=10, value=4, step=1),
-                                        helpText("Adjust point-label size")
+                                 fluidRow(
+                                   column(width=4,
+                                          sliderInput("label.size.local", NULL, min=1, max=10, value=4, step=1),
+                                          helpText("Adjust point-label size")
+                                   ),
+                                   
+                                   column(width=4,
+                                          sliderInput("axis.label.size", NULL, min=10, max=50, value=30, step=5),
+                                          helpText("Adjust axis labels and titles")
+                                   )
                                  ),
                                  
-                                 column(width=4,
-                                        sliderInput("axis.label.size", NULL, min=10, max=50, value=30, step=5),
-                                        helpText("Adjust axis labels and titles")
+                                 h3(""),
+                                 h3(""),
+                                 
+                                 fluidRow(
+                                   verbatimTextOutput("enrichment_explore")
                                  )
                           ),
                           
@@ -208,19 +224,24 @@ ui <- fluidPage(
                                    condition = "input.what_view=='scatter'",
                                    
                                    selectInput("scatter_x_axis", label="X-axis", 
-                                               choices = as.list(sort(names(dat))),
+                                               choices = as.list(sort(names(dat_all$max))),
                                                multiple=FALSE,
                                                selected=list("H3K27ac")),
                                    
                                    selectInput("scatter_y_axis", label="Y-axis", 
-                                               choices = as.list(c(sort(names(dat)), "Same as x-axis")),
+                                               choices = as.list(c(sort(names(dat_all$max)), "Same as x-axis")),
                                                multiple=FALSE,
                                                selected=list("RNA")),
                                    
                                    checkboxInput("show_gene_labels", "Show gene labels", FALSE),
                                    
                                    h4("Selected genes"),
-                                   verbatimTextOutput("brush_info_scatter")
+                                   verbatimTextOutput("brush_info_scatter"),
+                                   
+                                   h3(""),
+                                   h3(""),
+                                   
+                                   checkboxInput("run_local_enrichment", "Run enrichment", FALSE)
                                    
                                  )
                           ),
@@ -250,7 +271,7 @@ ui <- fluidPage(
                                         
                                         
                                         selectInput("x_axis", label="X-axis", 
-                                                    choices = as.list(sort(names(dat))),
+                                                    choices = as.list(sort(names(dat_all$max))),
                                                     multiple=FALSE,
                                                     selected=list("H3K27ac"))
                                  ),
@@ -263,7 +284,7 @@ ui <- fluidPage(
                                                     selected=list("A549_BR1_Baseline")),
                                         
                                         selectInput("y_axis", label="Y-axis", 
-                                                    choices = as.list(sort(names(dat))),
+                                                    choices = as.list(sort(names(dat_all$max))),
                                                     multiple=FALSE,
                                                     selected=list("RNA"))
                                  ),
@@ -335,7 +356,7 @@ ui <- fluidPage(
                           h3(""),
                           
                           selectInput("data_type_choice", label="Data Type Choice", 
-                                      choices = as.list(sort(names(dat))),
+                                      choices = as.list(sort(names(dat_all$max))),
                                       multiple=FALSE,
                                       selected=list("H3K27ac")
                           ),

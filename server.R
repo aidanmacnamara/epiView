@@ -9,6 +9,24 @@ shinyServer(function(input, output) {
   # tensorTab("TV", input, output, ui=F)
   
   
+  dat = reactive({
+    
+    # redo this
+    dat_out = vector("list", 6)
+    names(dat_out) = names(dat_all[[1]])
+    
+    dat_out$H3K27ac = dat_all$max$H3K27ac
+    dat_out$H3K4me3 = dat_all$max$H3K4me3
+    dat_out$H3K27me3 = dat_all$max$H3K27me3
+    dat_out$ATAC = dat_all$max$ATAC
+    dat_out$CTCF = dat_all$max$CTCF
+    dat_out$RNA = dat_all$max$RNA
+    
+    return(dat_out)
+    
+  })
+  
+  
   global_choice = eventReactive(input$do_global, {
     validate(
       need(input$project_choice != "", 'Please select at least one project to view.')
@@ -16,7 +34,7 @@ shinyServer(function(input, output) {
     
     tmp_list = list()
     
-    tmp = dat
+    tmp = dat()
     proj_ix = which(tmp[[1]]$annot$Project %in% input$project_choice)
     
     if(!"All" %in% input$project_choice) {
@@ -39,9 +57,30 @@ shinyServer(function(input, output) {
     # a_gc <<- global_choice() # make global for david's code
     # save(a_gc, file="gc.rda")
     
-    single_labels = rownames(global_choice()$tmp[[1]]$res)
-    group_labels = global_choice()$tmp[[1]]$annot$Project
-    pca_data = prep_for_plot(global_choice()$tmp, annot_1=group_labels, annot_2=single_labels, marks=names(global_choice()$tmp), plot_type=global_choice()$mds_type)
+    global_sel = global_choice()$tmp
+    group_labels = global_sel[[1]]$annot$Project
+    single_labels = rownames(global_sel[[1]]$res)
+    
+    if(input$cell.type.select!="") { # if certain blueprint cell types are only wanted
+      
+      cell_types = unlist(str_split(input$cell.type.select, ",")) # split the user input by ,
+      cell_types = trimws(cell_types) # remove leading/trailing whitespace
+      c_l = !grepl(paste(cell_types, collapse="|"), rownames(global_sel[[1]]$res), ignore.case=TRUE) # get the logic vector for the cell types
+      c_ix = grep(paste(cell_types, collapse="|"), rownames(global_sel[[1]]$res), ignore.case=TRUE) # get the index vector for the cell types
+      
+      for(i in 1:length(global_sel)) { # slice all data types to remove non-relevant blueprint data
+        global_sel[[i]]$res = global_sel[[i]]$res[!(group_labels=="BLUEPRINT" & c_l),]
+      }
+      
+      # single_labels[c_ix] = str_extract(tolower(single_labels[c_ix]), paste(tolower(cell_types), collapse="|")) # change label name
+      single_labels = single_labels[!(group_labels=="BLUEPRINT" & c_l)] # slice single labels
+      group_labels = group_labels[!(group_labels=="BLUEPRINT" & c_l)] # slice group labels
+
+    }
+    
+    # print(input$cell.type.select)
+    
+    pca_data = prep_for_plot(global_sel, annot_1=group_labels, annot_2=single_labels, marks=names(global_sel), plot_type=global_choice()$mds_type)
     pca_data$annot_1 = paste("Project", pca_data$annot_1)
     return(pca_data)
   })
@@ -64,20 +103,20 @@ shinyServer(function(input, output) {
   local_choice <- eventReactive(input$do_local, {
     validate(
       need(
-        (length(input$gene_choice) | length(input$go_choice)) &
-          length(input$cell_target_choice) &
-          length(input$cell_candidate_choice), 'Please select values for all fields.')
+        length(input$cell_target_choice) &
+          length(input$cell_candidate_choice), 'Please select cell targets and candidates.')
     )
     
-    tmp = dat
+    tmp = dat()
     
-    if(length(input$go_choice)) {
-      genes = unique(unlist(msig_go_bp[names(msig_go_bp) %in% input$go_choice]))
-    } else {
-      genes = input$gene_choice
+    if(length(input$go_choice) | length(input$gene_choice)) {
+      genes = unique(c(unlist(msig_go_bp[names(msig_go_bp) %in% input$go_choice]), input$gene_choice))
+      col_ix = which(colnames(tmp[[1]]$res) %in% genes)
+    } 
+    else {
+      col_ix = 1:dim(tmp[[1]]$res)[2]
     }
     
-    col_ix = which(colnames(tmp[[1]]$res) %in% genes)
     row_ix = which(rownames(tmp[[1]]$res) %in% c(input$cell_candidate_choice, input$cell_target_choice))
     
     # slice matrices if necessary
@@ -221,6 +260,39 @@ shinyServer(function(input, output) {
   })
   
   
+  enrichment_results_explore <- eventReactive(input$run_local_enrichment, {
+    
+    if(dim(selected_scatter())[1]) {
+      
+      my_genes = selected_scatter()$Gene
+      res = enrichment_test(genes=my_genes, gene_sets=msig_go_bp, genes_ref=unique(unlist(msig_go_bp)), verbose=FALSE)
+      
+      # gsea
+      # see https://www.biostars.org/p/113680/
+      # selection_ranked = dplyr::arrange(data.frame(gene=selected_data()$Gene, score=unlist(selected_data()[,2])*unlist(selected_data()[,3])), desc(score))
+      # global_ranked = dplyr::arrange(data.frame(gene=mode_choice()$Gene, score=unlist(mode_choice()[,2])*unlist(mode_choice()[,3])), desc(score))
+      
+      return(res)
+      
+    } else {
+      
+      return(NULL)
+      
+    }
+  })
+  
+  
+  output$enrichment_explore <- renderPrint({
+    
+    if(!is.null(enrichment_results_explore())) {
+      return(enrichment_results_explore())
+    } else {
+      return("Enrichment not run ...")
+    }
+    
+  })
+  
+  
   output$brush_info_scatter <- renderPrint({ # displays selected genes from scatter plot
     if(dim(selected_scatter())[1]) {
       return(tbl_df(selected_scatter()$Gene[!is.na(selected_scatter()$Gene)]))
@@ -237,9 +309,9 @@ shinyServer(function(input, output) {
   
   model_choice <- eventReactive(input$do_model, {
     
-    c_ix = which(rownames(dat[[1]]$res) %in% input$candidate_choice)
-    a_ix = which(rownames(dat[[1]]$res) %in% input$alt_choice)
-    t_ix = which(rownames(dat[[1]]$res) %in% input$target_choice)
+    c_ix = which(rownames(dat()[[1]]$res) %in% input$candidate_choice)
+    a_ix = which(rownames(dat()[[1]]$res) %in% input$alt_choice)
+    t_ix = which(rownames(dat()[[1]]$res) %in% input$target_choice)
     
     if(
       length(c_ix) &
@@ -249,7 +321,7 @@ shinyServer(function(input, output) {
       length(input$y_axis)
     )  {
       
-      my_df = spotfire_view(dat, x_axis=input$x_axis, y_axis=input$y_axis, comp_ix=list(c_ix, a_ix, t_ix))
+      my_df = spotfire_view(dat(), x_axis=input$x_axis, y_axis=input$y_axis, comp_ix=list(c_ix, a_ix, t_ix))
       rownames(my_df) = NULL
       my_df = tbl_df(my_df)
     }
@@ -340,16 +412,16 @@ shinyServer(function(input, output) {
   
   sushi_p <- eventReactive(input$do_sushi, { # get sushi plot ready on button click
     
-    sample_ix = sapply(input$cell_browser_choice, function(x) which(rownames(dat[[1]]$res)==x))
+    sample_ix = sapply(input$cell_browser_choice, function(x) which(rownames(dat()[[1]]$res)==x))
     data_type = input$data_type_choice
     win = input$browser_window
-    col_ix = which(colnames(dat[[1]]$res) %in% input$gene_browser_choice)
+    col_ix = which(colnames(dat()[[1]]$res) %in% input$gene_browser_choice)
     
     roi = gene_list_all[col_ix]
     start(roi) = start(roi) - win
     end(roi) = end(roi) + win
     
-    my_tracks = sapply(str_replace(dat[[data_type]]$annot$Bigwig[sample_ix], "/GWD/bioinfo/projects/", "z:/links/"), function(x) import.bw(x, which=roi))
+    my_tracks = sapply(str_replace(dat()[[data_type]]$annot$Bigwig[sample_ix], "/GWD/bioinfo/projects/", "z:/links/"), function(x) import.bw(x, which=roi))
     
     # mart_1 = useMart("ensembl", dataset="hsapiens_gene_ensembl")
     # t_list = getBM(attributes=c("chromosome_name","exon_chrom_start","exon_chrom_end","ensembl_transcript_id","strand","ensembl_gene_id"), filters='hgnc_symbol', values=roi$hgnc_symbol, mart=mart_1)
@@ -371,7 +443,7 @@ shinyServer(function(input, output) {
       for(i in 1:length(sample_ix)) {
         
         if(g_ix==1) {
-          plotBedgraph(my_tracks_df[[i]], chrom, chromstart, chromend, transparency=.2, color=SushiColors(2)(length(sample_ix))[i], main=rownames(dat[[1]]$res)[sample_ix[i]])
+          plotBedgraph(my_tracks_df[[i]], chrom, chromstart, chromend, transparency=.2, color=SushiColors(2)(length(sample_ix))[i], main=rownames(dat()[[1]]$res)[sample_ix[i]])
         } else{
           plotBedgraph(my_tracks_df[[i]], chrom, chromstart, chromend, transparency=.2, color=SushiColors(2)(length(sample_ix))[i])
         }
