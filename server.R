@@ -44,11 +44,33 @@ shinyServer(function(input, output) {
       }
     }
     
+    group_labels = tmp[[1]]$annot$Project
+    single_labels = rownames(tmp[[1]]$res)
+    
+    if(input$cell.type.select!="") { # if only certain blueprint cell types are wanted
+      
+      cell_types = unlist(str_split(input$cell.type.select, ",")) # split the user input by ,
+      cell_types = trimws(cell_types) # remove leading/trailing whitespace
+      c_l = !grepl(paste(cell_types, collapse="|"), rownames(tmp[[1]]$res), ignore.case=TRUE) # get the logic vector for the cell types
+      c_ix = grep(paste(cell_types, collapse="|"), rownames(tmp[[1]]$res), ignore.case=TRUE) # get the index vector for the cell types
+      
+      for(i in 1:length(tmp)) { # slice all data types to remove non-relevant blueprint data
+        tmp[[i]]$res = tmp[[i]]$res[!(group_labels=="BLUEPRINT" & c_l),]
+      }
+      
+      # single_labels[c_ix] = str_extract(tolower(single_labels[c_ix]), paste(tolower(cell_types), collapse="|")) # change label name
+      single_labels = single_labels[!(group_labels=="BLUEPRINT" & c_l)] # slice single labels
+      group_labels = group_labels[!(group_labels=="BLUEPRINT" & c_l)] # slice group labels
+      
+    }
+    
     tmp_list$tmp = tmp
     tmp_list$mds_type = input$mds_type
-    tmp_list$labels = tmp[[1]]$annot$Label
+    tmp_list$single_labels = single_labels
+    tmp_list$group_labels = group_labels
     
     return(tmp_list)
+    
   })
   
   
@@ -57,28 +79,7 @@ shinyServer(function(input, output) {
     # a_gc <<- global_choice() # make global for david's code
     # save(a_gc, file="gc.rda")
     
-    global_sel = global_choice()$tmp
-    group_labels = global_sel[[1]]$annot$Project
-    single_labels = rownames(global_sel[[1]]$res)
-    
-    if(input$cell.type.select!="") { # if certain blueprint cell types are only wanted
-      
-      cell_types = unlist(str_split(input$cell.type.select, ",")) # split the user input by ,
-      cell_types = trimws(cell_types) # remove leading/trailing whitespace
-      c_l = !grepl(paste(cell_types, collapse="|"), rownames(global_sel[[1]]$res), ignore.case=TRUE) # get the logic vector for the cell types
-      c_ix = grep(paste(cell_types, collapse="|"), rownames(global_sel[[1]]$res), ignore.case=TRUE) # get the index vector for the cell types
-      
-      for(i in 1:length(global_sel)) { # slice all data types to remove non-relevant blueprint data
-        global_sel[[i]]$res = global_sel[[i]]$res[!(group_labels=="BLUEPRINT" & c_l),]
-      }
-      
-      # single_labels[c_ix] = str_extract(tolower(single_labels[c_ix]), paste(tolower(cell_types), collapse="|")) # change label name
-      single_labels = single_labels[!(group_labels=="BLUEPRINT" & c_l)] # slice single labels
-      group_labels = group_labels[!(group_labels=="BLUEPRINT" & c_l)] # slice group labels
-
-    }
-    
-    pca_data = prep_for_plot(global_sel, annot_1=group_labels, annot_2=single_labels, marks=names(global_sel), plot_type=global_choice()$mds_type)
+    pca_data = prep_for_plot(global_choice()$tmp, annot_1=global_choice()$group_labels, annot_2=global_choice()$single_labels, marks=names(global_choice()$tmp), plot_type=global_choice()$mds_type)
     pca_data$annot_1 = paste("Project", pca_data$annot_1)
     return(pca_data)
   })
