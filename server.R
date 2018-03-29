@@ -12,15 +12,17 @@ shinyServer(function(input, output) {
   dat = reactive({
     
     # redo this
+    
+    # dat_out = dat_old
     dat_out = vector("list", 6)
     names(dat_out) = names(dat_all[[1]])
     
-    dat_out$H3K27ac = dat_all$max$H3K27ac
-    dat_out$H3K4me3 = dat_all$max$H3K4me3
-    dat_out$H3K27me3 = dat_all$max$H3K27me3
-    dat_out$ATAC = dat_all$max$ATAC
-    dat_out$CTCF = dat_all$max$CTCF
-    dat_out$RNA = dat_all$max$RNA
+    dat_out$H3K27ac = dat_all$tss$H3K27ac
+    dat_out$H3K4me3 = dat_all$tss$H3K4me3
+    dat_out$H3K27me3 = dat_all$tss$H3K27me3
+    dat_out$ATAC = dat_all$tss$ATAC
+    dat_out$CTCF = dat_all$tss$CTCF
+    dat_out$RNA = dat_all$tss$RNA
     
     return(dat_out)
     
@@ -88,14 +90,17 @@ shinyServer(function(input, output) {
   output$global_view <- renderPlot({
     
     if(input$data_type=="All") {
-      
-      print(ggplot(global_plot(), aes(x=x, y=y, color=factor(annot_1))) + geom_point(size=3, shape=17) + theme_thesis(20) + geom_text_repel(aes(label=annot_2), fontface="bold", size=input$label.size.global, force=0.5, show.legend=FALSE) + facet_wrap(~mark, nrow=2, scales="free"))
-      
+      p_1 = ggplot(global_plot(), aes(x=x, y=y, color=factor(annot_1))) + geom_point(size=3, shape=17) + theme_thesis(20) + facet_wrap(~mark, nrow=2, scales="free")
     } else {
-      
-      print(ggplot(filter(global_plot(), mark==input$data_type), aes(x=x, y=y, color=factor(annot_1))) + geom_point(size=3, shape=17) + theme_thesis(20) + geom_text_repel(aes(label=annot_2), fontface="bold", size=input$label.size.global, force=0.5, show.legend=FALSE))
-      
+      p_1 = ggplot(filter(global_plot(), mark==input$data_type), aes(x=x, y=y, color=factor(annot_1))) + geom_point(size=3, shape=17) + theme_thesis(20) 
     }
+    
+    if(input$show_sample_labels) {
+      return(p_1 + geom_text_repel(aes(label=annot_2), fontface="bold", size=input$label.size.global, force=0.5, show.legend=FALSE))
+    } else {
+      return(p_1)
+    }
+    
   })
   
   
@@ -108,8 +113,20 @@ shinyServer(function(input, output) {
     
     tmp = dat()
     
-    if(length(input$go_choice) | length(input$gene_choice)) {
-      genes = unique(c(unlist(msig_go_bp[names(msig_go_bp) %in% input$go_choice]), input$gene_choice))
+    gene_upload <- NULL
+    if(!is.null(input$user_choice$datapath)) {
+      if(input$header) {
+        gene_upload = as.character(unlist(read_csv(input$user_choice$datapath)))
+      } else {
+        gene_upload = as.character(unlist(read_csv(input$user_choice$datapath, col_names=FALSE)))
+      }
+    }
+    
+    print(gene_upload)
+    
+    if(length(input$go_choice) | length(input$gene_choice) | length(gene_upload)) {
+      genes = unique(c(unlist(msig_go_bp[names(msig_go_bp) %in% input$go_choice]), input$gene_choice, gene_upload))
+      print(genes)
       col_ix = which(colnames(tmp[[1]]$res) %in% genes)
     } 
     else {

@@ -66,6 +66,13 @@ ui <- fluidPage(
                          label="Filter for these cell types:",
                          NULL, value="macrophage, t cell"),
                
+               bsTooltip("cell.type.select", "Too avoid too much Blueprint data in the plot, you can filter by immune/blood cell type here", placement="bottom", trigger="hover", options=NULL),
+               
+               h3(""),
+               h3(""),
+               
+               checkboxInput("show_sample_labels", "Show sample labels", FALSE),
+               
                h3(""),
                h3(""),
                
@@ -171,6 +178,15 @@ ui <- fluidPage(
                                       choices = as.list(sort(names(msig_go_bp))),
                                       selected = list("GLYCERALDEHYDE 3 PHOSPHATE METABOLIC PROCESS"),
                                       multiple=TRUE),
+                          
+                          h3(""),
+                          h3(""),
+                          
+                          fileInput("user_choice", "Choose your gene list file",
+                                    multiple = FALSE
+                          ),
+                          
+                          checkboxInput("header", "Does your gene list file have a header?", FALSE),
                           
                           h3(""),
                           h3(""),

@@ -17,7 +17,7 @@ require(DT)
 
 # global objects
 
-# load("data/dat.RData") # main data object
+# load("data/dat_old.RData") # main data object
 load("data/dat_all.RData")
 load("data/gene_list_all.RData") # granges object (column annotation)
 load("data/t_list.RData") # for sushi plot
