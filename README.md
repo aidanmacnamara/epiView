@@ -1,5 +1,4 @@
 # epiView
 Shiny app for EpiChoose
 
-Test
-
+http://35.195.11.241/epiView/
