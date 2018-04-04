@@ -122,11 +122,8 @@ shinyServer(function(input, output) {
       }
     }
     
-    print(gene_upload)
-    
     if(length(input$go_choice) | length(input$gene_choice) | length(gene_upload)) {
       genes = unique(c(unlist(msig_go_bp[names(msig_go_bp) %in% input$go_choice]), input$gene_choice, gene_upload))
-      print(genes)
       col_ix = which(colnames(tmp[[1]]$res) %in% genes)
     } 
     else {
