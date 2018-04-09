@@ -52,7 +52,7 @@ Once the cell and gene selections have been made, **Update Parameters** can be s
 
 Returning to the data, let's look at the suitability of THP-1 and U937 with a number of treatments (baseline/PMA/PMA+LPS) as models for primary CD14+/CD16- monocytes based on the uploaded gene list. For the **Correlation** plot above, we see that the U937 models seem to be closer to the primary monocytes based on the H3K27ac signal at the selected loci. H3K4me3 and H4K27me3 do not show any separation (and as we do not have ATAC-seq/CTCF/RNA-seq data currently available for the Blueprint samples, these do not show).
 
-We can look at the correlation in the signal between 'U937 PMA+LPS' and the primary data in a little more detail by selecting **Scatterplot** on the left panel:
+We can look at the correlation in the signal between 'U937_BR1_PMA+LPS' and the primary data in a little more detail by selecting **Scatterplot** on the left panel:
 
 ![](images/walkthrough_5.png)
 
@@ -60,5 +60,27 @@ We can look at the correlation in the signal between 'U937 PMA+LPS' and the prim
 
 ![](images/walkthrough_6.png)
 
+Looking at 'THP-1_BR1_PMA+LPS' using the same plots, the H3K27ac signal correlates well but with a couple of notable outliers, which can be selected by dragging a box around the points (shown in the bottom-left panel below):
 
+![](images/walkthrough_7.png)
+
+We can examine the signal of these 2 outlier genes - PTEN and CDK6, by selecting the **Browser** tab and entering the relevant data in the left panel. The resulting plot overlays the H3K27ac signal for each sample across the selected genes. As each data point from the correlation plot is the area under the curve (AUC) around the gene TSS, we can visually confirm the differences summarised in the correlation plot. There is a strong H3K27ac signal for 'THP-1_BR1_PMA+LPS' at the TSSs for CDK6 and PTEN, compared to the primary monocytes.
+
+![](images/walkthrough_8.png)
+
+## Current Gaps and Known Issues ##
+
+1. We are still collecting data so comparisons are not currently available across all samples for all data types. Most notable is the missing expression data from Blueprint. This will be available shortly.
+
+2. ATAC-seq and CTCF data types were not measured as part of Blueprint.
+
+3. We are still working on the **Data Integration** and **Model Choice** tabs. We are investigating methods of integrating across data types to give a more accurate metric of relatedness between cells (as opposed to measuring each data type separately):
+
+![](images/walkthrough_9.png)
+
+4. The **Download** gives the metadata for all GSK samples covered in the project. Signal (bigwig) and BAM files will be available to download from here in the near future. For the moment, please send any data requests to aidan.x.macnamara@gsk.com.
+
+![](images/walkthrough_10.png)
+
+5. Any issues or feature requests can be added here: https://github.com/aidanmacnamara/epiView/issues
 

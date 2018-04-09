@@ -437,7 +437,7 @@ shinyServer(function(input, output) {
     track_list = vector("list", length(data_type))
     for(i in 1:length(data_type)) {
       # track_list[[i]] = sapply(tmp[[data_type[i]]]$annot$Bigwig[sample_ix], function(x) import.bw(x, which=roi))
-      track_list[[i]] = sapply(str_replace(tmp[[data_type[i]]]$annot$Bigwig[sample_ix], "/GWD/bioinfo/projects/", "z:/links/"), function(x) import.bw(x, which=roi)) # *** TMP CODE ***
+      track_list[[i]] = sapply(str_replace(dat()[[data_type[i]]]$annot$Bigwig[sample_ix], "/GWD/bioinfo/projects/", "z:/links/"), function(x) import.bw(x, which=roi)) # *** TMP CODE ***
     }
     
     # mart_1 = useMart("ensembl", dataset="hsapiens_gene_ensembl")
