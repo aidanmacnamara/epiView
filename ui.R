@@ -373,8 +373,8 @@ ui <- fluidPage(
                           
                           selectInput("data_type_choice", label="Data Type Choice", 
                                       choices = as.list(sort(names(dat_all$max))),
-                                      multiple=FALSE,
-                                      selected=list("H3K27ac")
+                                      multiple = TRUE,
+                                      selected = list("H3K27ac")
                           ),
                           
                           helpText(

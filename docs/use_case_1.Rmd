@@ -9,7 +9,7 @@ output:
 
 ## Introduction ##
 
-We have a starting gene list of possible targets that could modulate the upregulation of Type I Interferon signaling across a number of autoimmune diseases. We want to further interrogate these genes in a cell model. In this case, we have a choice between THP-1 and U937. We will use the **epiView** Shiny app to examine how these genes behave in the 2 cell lines and their relatedness to primary cell types from Blueprint.
+We have a starting gene list of possible targets that could modulate the upregulation of Type I Interferon signaling across a number of autoimmune diseases. We want to further interrogate these genes in a cell model. In this case, we have a choice between THP-1 and U937. We will use the **epiChoose** Shiny app to examine how these genes behave in the 2 cell lines and their relatedness to primary cell types from Blueprint.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 require(tidyverse)
@@ -50,5 +50,15 @@ To look at the differences at more specific loci, the **Data Exploration** tab c
 
 Once the cell and gene selections have been made, **Update Parameters** can be selected (bottom left) and the selected plot will appear in the main panel. **Correlation** has been selected in the figure above. This gives the distance, in terms of Pearson correlation, between the cell models and the target cells for each data type i.e. the lower the cell model is on the y-axis, the closer it is to the target cells based on the similarity of signal for that data type at the loci selected. If more than 1 target cell is chosen (as in this case, where we have chosen a number of primary monocytes), the average value across the target cells will be used for the correlation.
 
-Returning to the data, let's look at the suitability of THP-1 and U937 with a number of treatments (baseline/PMA/PMA+LPS) as models for primary CD14+/CD16- monocytes based on the uploaded gene list. For the **Correlation** plot above, we see that the U937 models seem to be closer to the primary monocytes based on the H3K27ac signal at the selected loci.
+Returning to the data, let's look at the suitability of THP-1 and U937 with a number of treatments (baseline/PMA/PMA+LPS) as models for primary CD14+/CD16- monocytes based on the uploaded gene list. For the **Correlation** plot above, we see that the U937 models seem to be closer to the primary monocytes based on the H3K27ac signal at the selected loci. H3K4me3 and H4K27me3 do not show any separation (and as we do not have ATAC-seq/CTCF/RNA-seq data currently available for the Blueprint samples, these do not show).
+
+We can look at the correlation in the signal between 'U937 PMA+LPS' and the primary data in a little more detail by selecting **Scatterplot** on the left panel:
+
+![](images/walkthrough_5.png)
+
+**Scatterplot** plots data type scores on each axis (the data type can be selected on the right) for each selected sample. If, however, you choose **Same as x-axis** for the y-axis choice, it will plot correlations between samples instead. This is what the figure above shows - the correlation in H3K27ac signal for all sample combinations across the gene list. From this it is clear that 'U937 PMA+LPS' strongly correlates with the primary monocyte samples (relevant panels highlighted). And just to show that this is a cell-type specific result, below is the correlation of the primary monocytes with the lung model A549, which, as you would expect, is poorly correlated in terms of H3K27ac signal across this gene set:
+
+![](images/walkthrough_6.png)
+
+
 

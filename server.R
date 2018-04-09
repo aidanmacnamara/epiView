@@ -434,7 +434,11 @@ shinyServer(function(input, output) {
     start(roi) = start(roi) - win
     end(roi) = end(roi) + win
     
-    my_tracks = sapply(str_replace(dat()[[data_type]]$annot$Bigwig[sample_ix], "/GWD/bioinfo/projects/", "z:/links/"), function(x) import.bw(x, which=roi))
+    track_list = vector("list", length(data_type))
+    for(i in 1:length(data_type)) {
+      # track_list[[i]] = sapply(tmp[[data_type[i]]]$annot$Bigwig[sample_ix], function(x) import.bw(x, which=roi))
+      track_list[[i]] = sapply(str_replace(tmp[[data_type[i]]]$annot$Bigwig[sample_ix], "/GWD/bioinfo/projects/", "z:/links/"), function(x) import.bw(x, which=roi)) # *** TMP CODE ***
+    }
     
     # mart_1 = useMart("ensembl", dataset="hsapiens_gene_ensembl")
     # t_list = getBM(attributes=c("chromosome_name","exon_chrom_start","exon_chrom_end","ensembl_transcript_id","strand","ensembl_gene_id"), filters='hgnc_symbol', values=roi$hgnc_symbol, mart=mart_1)
@@ -443,9 +447,13 @@ shinyServer(function(input, output) {
     
     t_list_filtered = filter(t_list, external_gene_name %in% input$gene_browser_choice)
     
-    my_tracks_df = lapply(my_tracks, function(x) as.data.frame(x)[,c(1:3,6)])
+    my_tracks_df = vector("list", length(data_type))
+    for(i in 1:length(data_type)) {
+      my_tracks_df[[i]] = lapply(track_list[[i]], function(x) as.data.frame(x)[,c(1:3,6)])
+    }
     
-    par(mfcol=c(length(sample_ix)+1,length(roi)), mar=c(4,4,2,2))
+    # par(mfcol=c(length(sample_ix)+1,length(roi)), mar=c(4,4,2,2))
+    par(mfcol=c(length(data_type)+1,length(roi)), mar=c(4,4,2,2))
     
     for(g_ix in 1:length(roi)) {
       
@@ -453,20 +461,34 @@ shinyServer(function(input, output) {
       chromstart = start(roi)[g_ix]
       chromend = end(roi)[g_ix]
       
-      for(i in 1:length(sample_ix)) {
+      for(d_ix in 1:length(data_type)) {
+        
+        # get order
+        my_tracks_df_g = lapply(my_tracks_df[[d_ix]], function(x) dplyr::filter(x, (seqnames==chrom & start>=chromstart & end<=chromend)))
+        sample_o = order(unlist(lapply(my_tracks_df_g, function(x) range(x$score)[2])), decreasing=TRUE)
         
         if(g_ix==1) {
-          plotBedgraph(my_tracks_df[[i]], chrom, chromstart, chromend, transparency=.2, color=SushiColors(2)(length(sample_ix))[i], main=rownames(dat()[[1]]$res)[sample_ix[i]])
-        } else{
-          plotBedgraph(my_tracks_df[[i]], chrom, chromstart, chromend, transparency=.2, color=SushiColors(2)(length(sample_ix))[i])
+          plotBedgraph(my_tracks_df_g[[sample_o[1]]], chrom, chromstart, chromend, transparency=.001, color=opaque(SushiColors(max(length(sample_ix),2))(length(sample_ix))[sample_o[1]]), main=data_type[d_ix])
+        } else {
+          plotBedgraph(my_tracks_df_g[[sample_o[1]]], chrom, chromstart, chromend, transparency=.001, color=opaque(SushiColors(max(length(sample_ix),2))(length(sample_ix))[sample_o[1]]))
         }
+        
         labelgenome(chrom, chromstart, chromend, n=10, scale="Mb")
         axis(side=2, las=2, tcl=.2)
         
+        if(length(sample_o)>1) {
+          for(j in 2:length(sample_o)) {
+            plotBedgraph(my_tracks_df_g[[sample_o[j]]], chrom, chromstart, chromend, transparency=.001, color=opaque(SushiColors(max(length(sample_ix),2))(length(sample_ix))[sample_o[j]]), overlay=TRUE, rescaleoverlay=FALSE)
+          }
+        }
+        
+        if(g_ix==1 & d_ix==1) {
+          legend("topright", inset=0.025, legend=rownames(dat()[[1]]$res)[sample_ix], fill=opaque(SushiColors(max(length(sample_ix),2))(length(sample_ix))), border=SushiColors(max(length(sample_ix),2))(length(sample_ix)), text.font=2, cex=2.0)
+        }
       }
       
-      plotGenes(t_list_filtered, chrom, chromstart, chromend, types=t_list_filtered$type, labeltext=TRUE, maxrows=50, height=0.4, plotgenetype="box")
-      labelplot(title=roi$hgnc_symbol[g_ix])
+      plotGenes(t_list_filtered, chrom, chromstart, chromend, types=t_list_filtered$type, labeltext=TRUE, maxrows=50, height=0.4, plotgenetype="box", fontsize=1)
+      labelplot(title=roi$hgnc_symbol[g_ix], titlecex=2)
       
     }
     
