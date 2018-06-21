@@ -15,11 +15,92 @@ ui <- fluidPage(
     
     tabPanel("Introduction",
              
-             column(width=7,
-                    includeMarkdown("docs/help.Rmd")
+             fluidRow(
+               
+               column(width=7,
+                      includeMarkdown("docs/help.Rmd"),
+                      img(src="overview_4.png", align="left")
+               ),
+               
+               column(width=5)
+               
              ),
              
-             column(width=5)
+             h3(""),
+             h3(""),
+             
+             column(width=2,
+                    
+                    selectInput("h3k27ac_summ", label="Gene-mapping for H3K27ac", 
+                                choices = list(
+                                  "Max across gene body"="max",
+                                  "TSS only"="tss",
+                                  "Sum of regions across gene body"="sum",
+                                  "Max across 10 closest peaks to TSS"="closest"
+                                  
+                                ),
+                                multiple=FALSE,
+                                selected=list("max_gb"))
+             ),
+             
+             column(width=2,
+                    
+                    selectInput("h3k4me3_summ", label="Gene-mapping for H3K4me3", 
+                                choices = list(
+                                  "Max across gene body"="max",
+                                  "TSS only"="tss",
+                                  "Sum of regions across gene body"="sum",
+                                  "Max across 10 closest peaks to TSS"="closest"
+                                  
+                                ),
+                                multiple=FALSE,
+                                selected=list("max_gb"))
+             ),
+             
+             column(width=2,
+                    
+                    selectInput("h3k27me3_summ", label="Gene-mapping for H3K27me3", 
+                                choices = list(
+                                  "Max across gene body"="max",
+                                  "TSS only"="tss",
+                                  "Sum of regions across gene body"="sum",
+                                  "Max across 10 closest peaks to TSS"="closest"
+                                  
+                                ),
+                                multiple=FALSE,
+                                selected=list("max_gb"))
+             ),
+             
+             column(width=2,
+                    
+                    selectInput("atac_summ", label="Gene-mapping for ATAC", 
+                                choices = list(
+                                  "Max across gene body"="max",
+                                  "TSS only"="tss",
+                                  "Sum of regions across gene body"="sum",
+                                  "Max across 10 closest peaks to TSS"="closest"
+                                  
+                                ),
+                                multiple=FALSE,
+                                selected=list("closest"))
+             ),
+             
+             column(width=2,
+                    
+                    selectInput("ctcf_summ", label="Gene-mapping for CTCF", 
+                                choices = list(
+                                  "Max across gene body"="max",
+                                  "TSS only"="tss",
+                                  "Sum of regions across gene body"="sum",
+                                  "Max across 10 closest peaks to TSS"="closest"
+                                  
+                                ),
+                                multiple=FALSE,
+                                selected=list("closest"))
+             ),
+             
+             h3(""),
+             h3("")
     ),
     
     tabPanel("Data Overview",
@@ -33,14 +114,14 @@ ui <- fluidPage(
                checkboxGroupInput("project_choice", "Project Choice:",
                                   list(
                                     "All",
-                                    "Project 1"=1,
-                                    "Project 2"=2,
-                                    "Project 3"=3,
-                                    "Project 4"=4,
-                                    "Project 5"=5,
-                                    "Project 6"=6,
-                                    "Blueprint"="BLUEPRINT",
-                                    "ENCODE"="ENCODE"
+                                    "Project 1 (blood)"=1,
+                                    "Project 2 (lung)"=2,
+                                    "Project 3 (monocyte/macrophage)"=3,
+                                    "Project 4 (liver)"=4,
+                                    "Project 5 (T-cells)"=5,
+                                    "Project 6 (B-cells)"=6,
+                                    "Blueprint (haematopoiesis)"="BLUEPRINT",
+                                    "ENCODE (cell lines)"="ENCODE"
                                   ), selected="All"
                ),
                
@@ -62,11 +143,11 @@ ui <- fluidPage(
                h3(""),
                
                
-               textInput("cell.type.select",
-                         label="Filter for these cell types:",
+               textInput("cell_type_select",
+                         label="Filter for these Blueprint cell types:",
                          NULL, value="macrophage, t cell"),
                
-               bsTooltip("cell.type.select", "Too avoid too much Blueprint data in the plot, you can filter by immune/blood cell type here", placement="bottom", trigger="hover", options=NULL),
+               bsTooltip("cell_type_select", "To avoid too much Blueprint data in the plot (if you have selected Blueprint data to display), you can filter by immune/blood cell type here", placement="bottom", trigger="hover", options=NULL),
                
                h3(""),
                h3(""),
@@ -77,7 +158,9 @@ ui <- fluidPage(
                h3(""),
                
                actionButton("do_global", "Run"),
-               
+              
+               bsTooltip("go_global", "Once you are happy with the parameter choice, click here to generate the plots", placement="bottom", trigger="hover", options=NULL),
+                
                width=2
                
              ),
@@ -160,7 +243,7 @@ ui <- fluidPage(
                                         "A549_Broad"
                                       )),
                           
-                          bsTooltip("cell_candidate_choice", "Choose the possible cell models for the chosen target.", placement="bottom", trigger="hover", options=NULL),
+                          bsTooltip("cell_candidate_choice", "Choose the possible cell models for the chosen target cell.", placement="bottom", trigger="hover", options=NULL),
                           
                           h3(""),
                           h3(""),
@@ -169,7 +252,7 @@ ui <- fluidPage(
                                       choices = as.list(sort(genes)),
                                       multiple=TRUE),
                           
-                          bsTooltip("gene_choice", "Choose the gene(s) over which to make the comparison. Multiple selections can be made here, or gene sets can be chosen below.", placement="bottom", trigger="hover", options=NULL),
+                          bsTooltip("gene_choice", "Choose the gene(s) over which to make the comparison. Multiple selections can be made here, or gene sets can be chosen below, by ontology, or by uploading a gene list. If more than one method is chosen, the genes will be combined.", placement="bottom", trigger="hover", options=NULL),
                           
                           h3(""),
                           h3(""),
@@ -202,6 +285,8 @@ ui <- fluidPage(
                           
                           h3(""),
                           h3(""),
+                          
+                          imageOutput("info_button", width="20px", height="20px"),
                           
                           column(width=10,
                                  plotOutput("local_view", height=700,
@@ -438,88 +523,6 @@ ui <- fluidPage(
     
     tabPanel("Data Integration"
              # tensorTab("TV", input, output, ui=T)
-    ),
-    
-    tabPanel("Advanced",
-             
-             fluidRow(
-               
-               column(width=6,
-                      img(src="overview_4.png", align="left")
-               ),
-               
-               column(width=6)
-               
-             ),
-             
-             h3(""),
-             h3(""),
-             
-             column(width=2,
-                    
-                    selectInput("h3k27ac_summ", label="Gene-mapping for H3K27ac", 
-                                choices = list(
-                                  "Max across gene body"="max",
-                                  "TSS only"="tss",
-                                  "Sum of regions across gene body"="sum"
-                                  
-                                ),
-                                multiple=FALSE,
-                                selected=list("max_gb"))
-             ),
-             
-             column(width=2,
-                    
-                    selectInput("h3k4me3_summ", label="Gene-mapping for H3K4me3", 
-                                choices = list(
-                                  "Max across gene body"="max",
-                                  "TSS only"="tss",
-                                  "Sum of regions across gene body"="sum"
-                                  
-                                ),
-                                multiple=FALSE,
-                                selected=list("max_gb"))
-             ),
-             
-             column(width=2,
-                    
-                    selectInput("h3k27me3_summ", label="Gene-mapping for H3K27me3", 
-                                choices = list(
-                                  "Max across gene body"="max",
-                                  "TSS only"="tss",
-                                  "Sum of regions across gene body"="sum"
-                                  
-                                ),
-                                multiple=FALSE,
-                                selected=list("max_gb"))
-             ),
-             
-             column(width=2,
-                    
-                    selectInput("atac_summ", label="Gene-mapping for ATAC", 
-                                choices = list(
-                                  "Max across gene body"="max",
-                                  "TSS only"="tss",
-                                  "Sum of regions across gene body"="sum"
-                                  
-                                ),
-                                multiple=FALSE,
-                                selected=list("sum"))
-             ),
-             
-             column(width=2,
-                    
-                    selectInput("ctcf_summ", label="Gene-mapping for CTCF", 
-                                choices = list(
-                                  "Max across gene body"="max",
-                                  "TSS only"="tss",
-                                  "Sum of regions across gene body"="sum"
-                                  
-                                ),
-                                multiple=FALSE,
-                                selected=list("sum"))
-             )
-             
     )
     
   )

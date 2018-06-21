@@ -3,7 +3,7 @@
 # group_labels = "GSK"
 # pca_data = prep_for_plot(dat, annot_1=group_labels, annot_2=single_labels, marks=names(dat), plot_type="mds")
 
-shinyServer(function(input, output) {
+shinyServer(function(input, output, session) {
   
   
   # tensorTab("TV", input, output, ui=F)
@@ -19,9 +19,9 @@ shinyServer(function(input, output) {
     
     dat_out$H3K27ac = dat_all$tss$H3K27ac
     dat_out$H3K4me3 = dat_all$tss$H3K4me3
-    dat_out$H3K27me3 = dat_all$tss$H3K27me3
-    dat_out$ATAC = dat_all$tss$ATAC
-    dat_out$CTCF = dat_all$tss$CTCF
+    dat_out$H3K27me3 = dat_all$max$H3K27me3
+    dat_out$ATAC = dat_all$closest$ATAC
+    dat_out$CTCF = dat_all$closest$CTCF
     dat_out$RNA = dat_all$tss$RNA
     
     return(dat_out)
@@ -49,9 +49,9 @@ shinyServer(function(input, output) {
     group_labels = tmp[[1]]$annot$Project
     single_labels = rownames(tmp[[1]]$res)
     
-    if(input$cell.type.select!="") { # if only certain blueprint cell types are wanted
+    if(input$cell_type_select!="") { # if only certain blueprint cell types are wanted
       
-      cell_types = unlist(str_split(input$cell.type.select, ",")) # split the user input by ,
+      cell_types = unlist(str_split(input$cell_type_select, ",")) # split the user input by ,
       cell_types = trimws(cell_types) # remove leading/trailing whitespace
       c_l = !grepl(paste(cell_types, collapse="|"), rownames(tmp[[1]]$res), ignore.case=TRUE) # get the logic vector for the cell types
       c_ix = grep(paste(cell_types, collapse="|"), rownames(tmp[[1]]$res), ignore.case=TRUE) # get the index vector for the cell types
@@ -209,6 +209,23 @@ shinyServer(function(input, output) {
   })
   
   
+  output$info_button <- renderImage({
+    return(list(
+      src = "www/information.png",
+      filetype = "image/png",
+      alt = "Information on plot",
+      width = "20px",
+      height = "20px"
+    ))
+  }, deleteFile=FALSE)
+  
+  
+  addPopover(session, id="info_button", title="Information",  trigger="click",
+             content=paste(tags$img(src="overview_4.png", width="600px")),
+             options=list(`max-width`="600px")
+  )
+  
+  
   output$local_view <- renderPlot({
     
     if(input$what_view=="correlation") {
@@ -351,7 +368,7 @@ shinyServer(function(input, output) {
     dat_out$color = factor(dat_out$color)
     dat_out = tbl_df(dat_out)
     
-    ggplot(dat_out, aes_string(names(dat_out)[2], names(dat_out)[3])) + geom_point(size=2, aes(color=color, alpha=color)) + theme_thesis(angle_45=FALSE) + scale_color_discrete(guide=FALSE) + scale_alpha_manual(guide=FALSE, values=c(0.3,0.8))
+    ggplot(dat_out, aes_string(names(dat_out)[2], names(dat_out)[3])) + geom_point(size=2, aes(color=color, alpha=color)) + theme_thesis(angle_45=FALSE) + scale_color_discrete(guide=FALSE) + scale_alpha_manual(guide=FALSE, values=c(0.3,0.8)) + annotate("rect", xmin=Inf, xmax=0, ymin=Inf, ymax=0, fill="green", alpha=0.1) 
     
   })
   
@@ -434,10 +451,24 @@ shinyServer(function(input, output) {
     start(roi) = start(roi) - win
     end(roi) = end(roi) + win
     
-    track_list = vector("list", length(data_type))
+    # TO EDIT BY COLLAPSE-TO-GENE TYPE
+    tss_window = 2e3
+    regions = gene_list_all[col_ix]
+    start(regions) = regions$transcription_start_site - tss_window
+    end(regions) = regions$transcription_start_site + tss_window
+    regions = as.data.frame(regions)[,1:3]
+    
+    my_tracks_df = vector("list", length(data_type))
     for(i in 1:length(data_type)) {
-      # track_list[[i]] = sapply(tmp[[data_type[i]]]$annot$Bigwig[sample_ix], function(x) import.bw(x, which=roi))
-      track_list[[i]] = sapply(str_replace(dat()[[data_type[i]]]$annot$Bigwig[sample_ix], "/GWD/bioinfo/projects/", "z:/links/"), function(x) import.bw(x, which=roi)) # *** TMP CODE ***
+      for(j in sample_ix) {
+        x = str_replace(dat()[[data_type[i]]]$annot$Bigwig[j], "/GWD/bioinfo/projects/", "z:/links/")
+        # x = tmp[[data_type[i]]]$annot$Bigwig[j]
+        if(file.exists(x)) {
+          my_tracks_df[[i]] = c(my_tracks_df[[i]], list(as.data.frame(import.bw(x, which=roi))[,c(1:3,6)]))
+        } else {
+          my_tracks_df[[i]] = c(my_tracks_df[[i]], list(data.frame()))
+        }
+      }
     }
     
     # mart_1 = useMart("ensembl", dataset="hsapiens_gene_ensembl")
@@ -447,13 +478,8 @@ shinyServer(function(input, output) {
     
     t_list_filtered = filter(t_list, external_gene_name %in% input$gene_browser_choice)
     
-    my_tracks_df = vector("list", length(data_type))
-    for(i in 1:length(data_type)) {
-      my_tracks_df[[i]] = lapply(track_list[[i]], function(x) as.data.frame(x)[,c(1:3,6)])
-    }
-    
-    # par(mfcol=c(length(sample_ix)+1,length(roi)), mar=c(4,4,2,2))
-    par(mfcol=c(length(data_type)+1,length(roi)), mar=c(4,4,2,2))
+    layout(matrix(c(1:((length(data_type)+2)*length(roi))), length(data_type)+2, length(roi), byrow=FALSE), heights=c(rep(6/length(data_type),length(data_type)),1,4))
+    par(mar=c(4,3,3,3))
     
     for(g_ix in 1:length(roi)) {
       
@@ -468,13 +494,17 @@ shinyServer(function(input, output) {
         sample_o = order(unlist(lapply(my_tracks_df_g, function(x) range(x$score)[2])), decreasing=TRUE)
         
         if(g_ix==1) {
-          plotBedgraph(my_tracks_df_g[[sample_o[1]]], chrom, chromstart, chromend, transparency=.001, color=opaque(SushiColors(max(length(sample_ix),2))(length(sample_ix))[sample_o[1]]), main=data_type[d_ix])
+          plotBedgraph(my_tracks_df_g[[sample_o[1]]], chrom, chromstart, chromend, transparency=.001, color=opaque(SushiColors(max(length(sample_ix),2))(length(sample_ix))[sample_o[1]]), main=data_type[d_ix], cex.main=3)
         } else {
           plotBedgraph(my_tracks_df_g[[sample_o[1]]], chrom, chromstart, chromend, transparency=.001, color=opaque(SushiColors(max(length(sample_ix),2))(length(sample_ix))[sample_o[1]]))
         }
         
-        labelgenome(chrom, chromstart, chromend, n=10, scale="Mb")
-        axis(side=2, las=2, tcl=.2)
+        if(d_ix==length(d_ix)) {
+          labelgenome(chrom, chromstart, chromend, n=10, scale="Mb", cex.axis=2, scalecex=2, scaleline=1.2, chromcex=2, chromline=1.2)
+        } else {
+          labelgenome(chrom, chromstart, chromend, n=10, scale="Mb", cex.axis=2, scalecex=2, scaleline=1.2, chromcex=2, chromline=1.2) # turn off labels here, need to use axis()
+        }
+        axis(side=2, las=2, tcl=.2, cex.axis=2)
         
         if(length(sample_o)>1) {
           for(j in 2:length(sample_o)) {
@@ -487,7 +517,9 @@ shinyServer(function(input, output) {
         }
       }
       
-      plotGenes(t_list_filtered, chrom, chromstart, chromend, types=t_list_filtered$type, labeltext=TRUE, maxrows=50, height=0.4, plotgenetype="box", fontsize=1)
+      plotBed(regions, chrom, chromstart, chromend)
+      
+      plotGenes(t_list_filtered, chrom, chromstart, chromend, types=t_list_filtered$type, labeltext=TRUE, maxrows=50, height=0.4, plotgenetype="box", fontsize=2)
       labelplot(title=roi$hgnc_symbol[g_ix], titlecex=2)
       
     }
