@@ -11,17 +11,38 @@ shinyServer(function(input, output, session) {
   
   dat = reactive({
     
-    # redo this
-    
-    # dat_out = dat_old
     dat_out = vector("list", 6)
     names(dat_out) = names(dat_all[[1]])
     
-    dat_out$H3K27ac = dat_all$tss$H3K27ac
-    dat_out$H3K4me3 = dat_all$tss$H3K4me3
-    dat_out$H3K27me3 = dat_all$max$H3K27me3
-    dat_out$ATAC = dat_all$closest$ATAC
-    dat_out$CTCF = dat_all$closest$CTCF
+    if(input$h3k27ac_summ == "max") {dat_out$H3K27ac = dat_all$max$H3K27ac}
+    else if(input$h3k27ac_summ == "tss") {dat_out$H3K27ac = dat_all$tss$H3K27ac}
+    else if(input$h3k27ac_summ == "sum") {dat_out$H3K27ac = dat_all$sum$H3K27ac}
+    else if(input$h3k27ac_summ == "closest") {dat_out$H3K27ac = dat_all$closest$H3K27ac}
+    
+    if(input$h3k4me3_summ == "max") {dat_out$H3K4me3 = dat_all$max$H3K4me3}
+    else if(input$h3k4me3_summ == "tss") {dat_out$H3K4me3 = dat_all$tss$H3K4me3}
+    else if(input$h3k4me3_summ == "sum") {dat_out$H3K4me3 = dat_all$sum$H3K4me3}
+    else if(input$h3k4me3_summ == "closest") {dat_out$H3K4me3 = dat_all$closest$H3K4me3}
+    
+    if(input$h3k27me3_summ == "max") {dat_out$H3K27me3 = dat_all$max$H3K27me3}
+    else if(input$h3k27me3_summ == "tss") {dat_out$H3K27me3 = dat_all$tss$H3K27me3}
+    else if(input$h3k27me3_summ == "sum") {dat_out$H3K27me3 = dat_all$sum$H3K27me3}
+    else if(input$h3k27me3_summ == "closest") {dat_out$H3K27me3 = dat_all$closest$H3K27me3}
+    
+    if(input$ctcf_summ == "max") {dat_out$CTCF = dat_all$max$CTCF}
+    else if(input$ctcf_summ == "tss") {dat_out$CTCF = dat_all$tss$CTCF}
+    else if(input$ctcf_summ == "sum") {dat_out$CTCF = dat_all$sum$CTCF}
+    else if(input$ctcf_summ == "closest") {dat_out$CTCF = dat_all$closest$CTCF}
+    
+    if(input$atac_summ == "max") {dat_out$ATAC   = dat_all$max$ATAC}
+    else if(input$atac_summ == "tss") {dat_out$ATAC = dat_all$tss$ATAC}
+    else if(input$atac_summ == "sum") {dat_out$ATAC = dat_all$sum$ATAC}
+    else if(input$atac_summ == "closest") {dat_out$ATAC = dat_all$closest$ATAC}
+    
+    # dat_out$H3K4me3 = dat_all$tss$H3K4me3
+    # dat_out$H3K27me3 = dat_all$max$H3K27me3
+    # dat_out$ATAC = dat_all$closest$ATAC
+    # dat_out$CTCF = dat_all$closest$CTCF
     dat_out$RNA = dat_all$tss$RNA
     
     return(dat_out)
@@ -220,10 +241,14 @@ shinyServer(function(input, output, session) {
   }, deleteFile=FALSE)
   
   
+  # output$show_popover <- eventReactive(input$what_view, {
+  #   if(input$what_view=="correlation") {
   addPopover(session, id="info_button", title="Information",  trigger="click",
-             content=paste(tags$img(src="overview_4.png", width="600px")),
+             content=paste(tags$img(src="explain_correlation.png", width="600px")),
              options=list(`max-width`="600px")
   )
+  #   }
+  # })
   
   
   output$local_view <- renderPlot({

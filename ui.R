@@ -7,7 +7,7 @@ genes = colnames(dat_all$max[[1]]$res)
 
 ui <- fluidPage(
   
-  titlePanel("epiChoose: Data-driven cell model choice"),
+  titlePanel("epiChoose: Data-driven cell model choice: Beta Version"),
   
   tabsetPanel(
     
@@ -36,7 +36,7 @@ ui <- fluidPage(
                                   "Max across gene body"="max",
                                   "TSS only"="tss",
                                   "Sum of regions across gene body"="sum",
-                                  "Max across 10 closest peaks to TSS"="closest"
+                                  "Max across 10 closest regions to TSS"="closest"
                                   
                                 ),
                                 multiple=FALSE,
@@ -50,7 +50,7 @@ ui <- fluidPage(
                                   "Max across gene body"="max",
                                   "TSS only"="tss",
                                   "Sum of regions across gene body"="sum",
-                                  "Max across 10 closest peaks to TSS"="closest"
+                                  "Max across 10 closest regions to TSS"="closest"
                                   
                                 ),
                                 multiple=FALSE,
@@ -64,7 +64,7 @@ ui <- fluidPage(
                                   "Max across gene body"="max",
                                   "TSS only"="tss",
                                   "Sum of regions across gene body"="sum",
-                                  "Max across 10 closest peaks to TSS"="closest"
+                                  "Max across 10 closest regions to TSS"="closest"
                                   
                                 ),
                                 multiple=FALSE,
@@ -78,7 +78,7 @@ ui <- fluidPage(
                                   "Max across gene body"="max",
                                   "TSS only"="tss",
                                   "Sum of regions across gene body"="sum",
-                                  "Max across 10 closest peaks to TSS"="closest"
+                                  "Max across 10 closest regions to TSS"="closest"
                                   
                                 ),
                                 multiple=FALSE,
@@ -92,7 +92,7 @@ ui <- fluidPage(
                                   "Max across gene body"="max",
                                   "TSS only"="tss",
                                   "Sum of regions across gene body"="sum",
-                                  "Max across 10 closest peaks to TSS"="closest"
+                                  "Max across 10 closest regions to TSS"="closest"
                                   
                                 ),
                                 multiple=FALSE,
@@ -100,7 +100,9 @@ ui <- fluidPage(
              ),
              
              h3(""),
-             h3("")
+             h3(""),
+             tags$head(tags$style(HTML("#dashboard{margin-bottom:50px;}")))
+             
     ),
     
     tabPanel("Data Overview",
@@ -158,9 +160,9 @@ ui <- fluidPage(
                h3(""),
                
                actionButton("do_global", "Run"),
-              
+               
                bsTooltip("go_global", "Once you are happy with the parameter choice, click here to generate the plots", placement="bottom", trigger="hover", options=NULL),
-                
+               
                width=2
                
              ),
@@ -287,6 +289,7 @@ ui <- fluidPage(
                           h3(""),
                           
                           imageOutput("info_button", width="20px", height="20px"),
+                          tags$style(".popover{max-width: 100%;}"),
                           
                           column(width=10,
                                  plotOutput("local_view", height=700,
