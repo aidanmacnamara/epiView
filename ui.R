@@ -288,8 +288,25 @@ ui <- fluidPage(
                           h3(""),
                           h3(""),
                           
-                          imageOutput("info_button", width="20px", height="20px"),
                           tags$style(".popover{max-width: 100%;}"),
+                          
+                          conditionalPanel(
+                            condition = "input.what_view == 'correlation'",
+                            imageOutput("info_button_1", width="20px", height="20px"),
+                            bsPopover(id="info_button_1", title="Information",  trigger="click",
+                                      content=paste(tags$img(src="explain_correlation.png", width="600px")),
+                                      options=list(`max-width`="600px")
+                            )
+                          ),
+                          
+                          conditionalPanel(
+                            condition = "input.what_view == 'barchart'",
+                            imageOutput("info_button_2", width="20px", height="20px"),
+                            bsPopover(id="info_button_2", title="Information",  trigger="click",
+                                      content=paste(tags$img(src="explain_barchart.png", width="600px")),
+                                      options=list(`max-width`="600px")
+                            )
+                          ),
                           
                           column(width=10,
                                  plotOutput("local_view", height=700,

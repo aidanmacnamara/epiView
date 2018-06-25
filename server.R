@@ -230,25 +230,12 @@ shinyServer(function(input, output, session) {
   })
   
   
-  output$info_button <- renderImage({
-    return(list(
-      src = "www/information.png",
-      filetype = "image/png",
-      alt = "Information on plot",
-      width = "20px",
-      height = "20px"
-    ))
-  }, deleteFile=FALSE)
-  
-  
   # output$show_popover <- eventReactive(input$what_view, {
-  #   if(input$what_view=="correlation") {
-  addPopover(session, id="info_button", title="Information",  trigger="click",
-             content=paste(tags$img(src="explain_correlation.png", width="600px")),
-             options=list(`max-width`="600px")
-  )
-  #   }
-  # })
+  
+  # addPopover(session, id="info_button", title="Information",  trigger="click",
+  #            content=paste(tags$img(src="explain_correlation.png", width="600px")),
+  #            options=list(`max-width`="600px")
+  # )
   
   
   output$local_view <- renderPlot({
@@ -577,5 +564,50 @@ shinyServer(function(input, output, session) {
   )
   
   
+  output$info_button_1 <- renderImage({
+    return(list(
+      src = "www/information.png",
+      filetype = "image/png",
+      alt = "Information on plot",
+      width = "20px",
+      height = "20px"
+    ))
+  }, deleteFile=FALSE)
+  
+  
+  output$info_button_2 <- renderImage({
+    return(list(
+      src = "www/information.png",
+      filetype = "image/png",
+      alt = "Information on plot",
+      width = "20px",
+      height = "20px"
+    ))
+  }, deleteFile=FALSE)
+
+  
+  output$info_button_3 <- renderImage({
+    return(list(
+      src = "www/information.png",
+      filetype = "image/png",
+      alt = "Information on plot",
+      width = "20px",
+      height = "20px"
+    ))
+  }, deleteFile=FALSE)
+  
+  
+  output$info_button_4 <- renderImage({
+    return(list(
+      src = "www/information.png",
+      filetype = "image/png",
+      alt = "Information on plot",
+      width = "20px",
+      height = "20px"
+    ))
+  }, deleteFile=FALSE)
+  
+  
 })
+
 
