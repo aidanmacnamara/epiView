@@ -9,7 +9,7 @@ output:
 
 ## Introduction ##
 
-We have a starting gene list of possible targets that could modulate the upregulation of Type I Interferon signaling across a number of autoimmune diseases. We want to further interrogate these genes in a cell model. In this case, we have a choice between THP-1 and U937. We will use the **epiChoose** Shiny app to examine how these genes behave in the 2 cell lines and their relatedness to primary cell types from Blueprint.
+We have a starting gene list of genes that are important for the immune response in monocytes and macrophages. We want to further interrogate these genes in a cell model. In this case, we have a choice between THP-1 and U937. We will use the **epiChoose** Shiny app to examine how these genes behave in the 2 cell lines and their relatedness to primary cell types from Blueprint.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 require(tidyverse)
@@ -18,7 +18,7 @@ require(knitr)
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-my_genes = read_tsv("ifn_list_52.txt", col_names=FALSE)
+my_genes = read_tsv("gene_list.txt", col_names=FALSE)
 print(my_genes$X1)
 ```
 

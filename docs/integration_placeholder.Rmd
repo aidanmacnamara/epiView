@@ -1,0 +1,15 @@
+---
+title: "Integration"
+author: "Aidan MacNamara"
+date: "26 June 2018"
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+---
+
+![](images/integration.png)
+
+We are currently testing a number of methods that work across all the data for each cell type to produce an integrated metric of relatedness. The results of this will be available in the next release of the platform.
+
+

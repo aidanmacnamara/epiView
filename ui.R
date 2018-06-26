@@ -7,7 +7,7 @@ genes = colnames(dat_all$max[[1]]$res)
 
 ui <- fluidPage(
   
-  titlePanel("epiChoose: Data-driven cell model choice: Beta Version"),
+  titlePanel("epiChoose: Data-driven cell model choice: Beta"),
   
   tabsetPanel(
     
@@ -308,6 +308,24 @@ ui <- fluidPage(
                             )
                           ),
                           
+                          conditionalPanel(
+                            condition = "input.what_view == 'boxplot'",
+                            imageOutput("info_button_3", width="20px", height="20px"),
+                            bsPopover(id="info_button_3", title="Information",  trigger="click",
+                                      content=paste(tags$img(src="explain_boxplot.png", width="600px")),
+                                      options=list(`max-width`="600px")
+                            )
+                          ),
+                          
+                          conditionalPanel(
+                            condition = "input.what_view == 'scatter'",
+                            imageOutput("info_button_4", width="20px", height="20px"),
+                            bsPopover(id="info_button_4", title="Information",  trigger="click",
+                                      content=paste(tags$img(src="explain_scatterplot.png", width="600px")),
+                                      options=list(`max-width`="600px")
+                            )
+                          ),
+                          
                           column(width=10,
                                  plotOutput("local_view", height=700,
                                             dblclick = "scatter_dblclick",
@@ -350,7 +368,7 @@ ui <- fluidPage(
                                                selected=list("H3K27ac")),
                                    
                                    selectInput("scatter_y_axis", label="Y-axis", 
-                                               choices = as.list(c(sort(names(dat_all$max)), "Same as x-axis")),
+                                               choices = as.list(c(sort(names(dat_all$max)), "Compare across cells with 'X-axis' datatype")),
                                                multiple=FALSE,
                                                selected=list("RNA")),
                                    
@@ -373,9 +391,23 @@ ui <- fluidPage(
                ),
                
                tabPanel("Model Choice",
+                        
+                        h3(""),
+                        h3(""),
+                        
+                        tags$style(".popover{max-width: 100%;}"),
+                        imageOutput("info_button_5", width="20px", height="20px"),
+                        bsPopover(id="info_button_5", title="Information",  trigger="click",
+                                  content=paste(tags$img(src="explain_model_choice.png", width="600px")),
+                                  options=list(`max-width`="600px")
+                        ),
+                        
+                        h3(""),
+                        
                         fluidRow(
+                          
                           column(width=7,
-                                 plotOutput("plot_model_choice", height=600,
+                                 plotOutput("plot_model_choice", height=500,
                                             click = "plot_model_choice_click",
                                             brush = brushOpts(id="plot_model_choice_brush")
                                  ),
@@ -506,6 +538,15 @@ ui <- fluidPage(
                         
                         mainPanel(
                           
+                          h3(""),
+                          
+                          tags$style(".popover{max-width: 100%;}"),
+                          imageOutput("info_button_6", width="20px", height="20px"),
+                          bsPopover(id="info_button_6", title="Information",  trigger="click",
+                                    content=paste(tags$img(src="explain_browser.png", width="600px")),
+                                    options=list(`max-width`="600px")
+                          ),
+                          
                           plotOutput("sushi", height=800),
                           width=10
                           
@@ -530,19 +571,45 @@ ui <- fluidPage(
              
              mainPanel(
                
-               dataTableOutput("gsk_data"),
-               
-               downloadButton(
-                 'download_gsk_data',
-                 'Download'
+               fluidRow(
+                 
+                 dataTableOutput("gsk_data"),
+                 
+                 column(width=2,
+                        downloadButton(
+                          'download_gsk_data',
+                          'Download table'
+                        )
+                 ),
+                 
+                 column(width=3,
+                        downloadButton(
+                          'download_bigwig',
+                          'Download signal files from selected'
+                        )
+                 )
                ),
+               
+               h3(""),
+               h3(""),
                
                width=10
              )
     ),
     
-    tabPanel("Data Integration"
+    tabPanel("Data Integration",
+             
              # tensorTab("TV", input, output, ui=T)
+             
+             fluidRow(
+               
+               column(width=7,
+                      includeMarkdown("docs/integration_placeholder.Rmd")
+               ),
+               
+               column(width=5)
+               
+             )
     )
     
   )

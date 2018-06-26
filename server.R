@@ -185,7 +185,7 @@ shinyServer(function(input, output, session) {
       match(input$cell_candidate_choice, rownames(local_choice()[[1]]$res))
     )
     
-    if(y_axis=="Same as x-axis") {
+    if(y_axis=="Compare cells with this datatype") {
       
       to_plot = melt(as.matrix(local_choice()[[which(names(local_choice())==x_axis)]]$res[all_ix,]))
       
@@ -228,14 +228,6 @@ shinyServer(function(input, output, session) {
     }
     
   })
-  
-  
-  # output$show_popover <- eventReactive(input$what_view, {
-  
-  # addPopover(session, id="info_button", title="Information",  trigger="click",
-  #            content=paste(tags$img(src="explain_correlation.png", width="600px")),
-  #            options=list(`max-width`="600px")
-  # )
   
   
   output$local_view <- renderPlot({
@@ -547,8 +539,9 @@ shinyServer(function(input, output, session) {
   output$gsk_data = DT::renderDataTable(escape=FALSE, {
     
     # https://stackoverflow.com/questions/26026740/rstudio-shiny-list-from-checking-rows-in-datatables  
-    add_check <- paste0('<input type="checkbox" name="row', 1, '" value="', 1, '">',"")
-    cbind(Download=add_check, data_gsk[,input$show_vars,drop=FALSE])
+    # add_check <- paste0('<input type="checkbox" name="row', 1, '" value="', 1, '">',"")
+    # cbind(Download=add_check, data_gsk[,input$show_vars,drop=FALSE])
+    data_gsk[,input$show_vars,drop=FALSE]
     
   }, filter="top", rownames=FALSE
   )
@@ -560,6 +553,16 @@ shinyServer(function(input, output, session) {
     },
     content = function(file) {
       write_csv(data_gsk, file)
+    }
+  )
+  
+  
+  output$download_bigwig <- downloadHandler(
+    filename = function() { 
+      paste('selected_signals', '.zip', sep='') 
+    },
+    content = function(file) {
+      # working on code for this - will be slow ...
     }
   )
   
@@ -598,6 +601,28 @@ shinyServer(function(input, output, session) {
   
   
   output$info_button_4 <- renderImage({
+    return(list(
+      src = "www/information.png",
+      filetype = "image/png",
+      alt = "Information on plot",
+      width = "20px",
+      height = "20px"
+    ))
+  }, deleteFile=FALSE)
+  
+  
+  output$info_button_5 <- renderImage({
+    return(list(
+      src = "www/information.png",
+      filetype = "image/png",
+      alt = "Information on plot",
+      width = "20px",
+      height = "20px"
+    ))
+  }, deleteFile=FALSE)
+  
+  
+  output$info_button_6 <- renderImage({
     return(list(
       src = "www/information.png",
       filetype = "image/png",
