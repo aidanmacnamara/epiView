@@ -185,7 +185,7 @@ shinyServer(function(input, output, session) {
       match(input$cell_candidate_choice, rownames(local_choice()[[1]]$res))
     )
     
-    if(y_axis=="Compare cells with this datatype") {
+    if(y_axis=="Compare across cells with 'X-axis' datatype") {
       
       to_plot = melt(as.matrix(local_choice()[[which(names(local_choice())==x_axis)]]$res[all_ix,]))
       
@@ -466,7 +466,6 @@ shinyServer(function(input, output, session) {
     for(i in 1:length(data_type)) {
       for(j in sample_ix) {
         x = str_replace(dat()[[data_type[i]]]$annot$Bigwig[j], "/GWD/bioinfo/projects/", "z:/links/")
-        # x = tmp[[data_type[i]]]$annot$Bigwig[j]
         if(file.exists(x)) {
           my_tracks_df[[i]] = c(my_tracks_df[[i]], list(as.data.frame(import.bw(x, which=roi))[,c(1:3,6)]))
         } else {

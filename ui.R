@@ -547,7 +547,7 @@ ui <- fluidPage(
                                     options=list(`max-width`="600px")
                           ),
                           
-                          plotOutput("sushi", height=800),
+                          plotOutput("sushi", height=780),
                           width=10
                           
                         )
