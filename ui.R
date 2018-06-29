@@ -36,7 +36,7 @@ ui <- fluidPage(
                                   "Max across gene body"="max",
                                   "TSS only"="tss",
                                   "Sum of regions across gene body"="sum",
-                                  "Max across 10 closest regions to TSS"="closest"
+                                  "Sum across 10 closest regions to TSS"="closest"
                                   
                                 ),
                                 multiple=FALSE,
@@ -50,7 +50,7 @@ ui <- fluidPage(
                                   "Max across gene body"="max",
                                   "TSS only"="tss",
                                   "Sum of regions across gene body"="sum",
-                                  "Max across 10 closest regions to TSS"="closest"
+                                  "Sum across 10 closest regions to TSS"="closest"
                                   
                                 ),
                                 multiple=FALSE,
@@ -64,7 +64,7 @@ ui <- fluidPage(
                                   "Max across gene body"="max",
                                   "TSS only"="tss",
                                   "Sum of regions across gene body"="sum",
-                                  "Max across 10 closest regions to TSS"="closest"
+                                  "Sum across 10 closest regions to TSS"="closest"
                                   
                                 ),
                                 multiple=FALSE,
@@ -78,7 +78,7 @@ ui <- fluidPage(
                                   "Max across gene body"="max",
                                   "TSS only"="tss",
                                   "Sum of regions across gene body"="sum",
-                                  "Max across 10 closest regions to TSS"="closest"
+                                  "Sum across 10 closest regions to TSS"="closest"
                                   
                                 ),
                                 multiple=FALSE,
@@ -92,7 +92,7 @@ ui <- fluidPage(
                                   "Max across gene body"="max",
                                   "TSS only"="tss",
                                   "Sum of regions across gene body"="sum",
-                                  "Max across 10 closest regions to TSS"="closest"
+                                  "Sum across 10 closest regions to TSS"="closest"
                                   
                                 ),
                                 multiple=FALSE,

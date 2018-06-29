@@ -53,19 +53,27 @@ One of the goals of this project is to **integrate** across epigenetic and expre
 2. Using the [signal file](https://genome.ucsc.edu/goldenpath/help/bigWig.html) for that particular data type and cell, the Area Under the Curve (AUC) is calculated across regions of interest (ROI).
 3. When this is done across all cells of interest, a matrix is produced for that data type where each row is a cell type / cell line, each column is an ROI, and the cells contain the AUC for that data type.
 4. Hence, each data type produces a matrix that can be compared and contrasted using further statistical and analysis techniques (e.g. PCA).
-5. The epigenetic data types will produce differently dimensioned matrices compared to RNA-seq (each column in an epigenetic matrix will be a regulatory region in the genome, whereas each column will be a gene for the RNA-seq matrix). Hence, in order to compare and/or combine epigenetic and expression data, the epigenetic data needs to be centred on genes. This process is outlined in **Expression - Epigenetic Comparisons** below.
+5. The epigenetic data types will produce differently dimensioned matrices compared to RNA-seq (each column in an epigenetic matrix will be a regulatory region in the genome, whereas each column will be a gene for the RNA-seq matrix). Hence, in order to compare and/or combine epigenetic and expression data, the epigenetic data needs to be centred on genes. This process is outlined in **Expression and Epigenetic Comparisons** below.
 
 
 ***
-### Expression - Epigenetic Comparisons
+### Expression and Epigenetic Comparisons
 
 Using the method above produces a set of matrices that are comparable across the epigenetic datasets but not against the expression (RNA-seq) data. i.e. the ROIs for the epigenetic data types could be inter- and intragenic regions (e.g. promoters and enhancers), whereas, by definition, the ROIs for the RNA-seq can only be the genes themselves.
 
 ![](images/overview_3.png)
 
-In order to compare the epigenetic and expression data, columns of each of the data type matrices must be a gene and hence the epigenetic ROIs must be mapped to genes. The epigenetic assays that we have used (H3K27ac, H3K4me3, H3K27me3, CTCF, ATAC-seq) are the "footprint", or markers, of active regulatory activity in that cell type. These features can affect genes either in close proximity or distal to the gene in question. Ideally, in order to map these active regulatory regions that have been pinpointed by these epigenetic assays, functional assays such as Chromosome Conformation Capture would be used. However, a good approximation can be made by simply taking a window around the gene and taking the largest peak (maximum AUC) for that window as the value for that gene. Using this method, each gene is given an epigenetic score, which can then be compared and contrasted with the expression value for that gene.
+In order to compare the epigenetic and expression data, columns of each of the data type matrices must be a gene, hence the epigenetic ROIs must be mapped to genes. The epigenetic assays that we have used (H3K27ac, H3K4me3, H3K27me3, CTCF, ATAC-seq) are the "footprint", or markers, of active regulatory activity in that cell type. These features can affect genes either in close proximity or distal to the gene in question. Ideally, in order to map these active regulatory regions that have been pinpointed by these epigenetic assays, functional assays such as Chromosome Conformation Capture would be used. However, a good approximation can be made by summarising the data type signal across the (Ensembl) regulatory regions around a gene. Different ways of summarising the signal will suit different data types (see the next session, **Selecting collapse-to-gene method per data type**). However, whatever the summation method used, the end result is that each gene is given an epigenetic score, which can then be compared and contrasted with the expression value for that gene.
 
 
 ***
 ## Selecting collapse-to-gene method per data type ##
 
+We have implemented four different methods to summarise the epigenetic signal around a gene:
+
+1. *Max region across gene body* - Using a 2Kb window either side of the gene, which is the regulatory region with the greatest AUC value?
+2. *TSS only* - The AUC across the transcriptional start site (TSS-/+2Kb) only
+3. *Sum of regions across gene body* - The sum of the AUC for each regulatory region in the gene body (-/+2kB either side of the gene)
+4. *Sum of 10 closest regions* - The sum of the AUC for the 10 closest regulatory regions to the gene
+
+By default, *Max region across gene body* is chosen for H4K27ac, H3K4me3, and H3K27me3. Because ATAC and CTCF are more diffuse signals around the gene, *Sum of 10 closest regions* is chosen as default for these two data types. Each collapse-to-gene method can be changed for each data type below:
