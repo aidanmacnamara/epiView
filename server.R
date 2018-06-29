@@ -465,18 +465,24 @@ shinyServer(function(input, output, session) {
     my_tracks_df = vector("list", length(data_type))
     for(i in 1:length(data_type)) {
       for(j in sample_ix) {
-        # x = str_replace(dat()[[data_type[i]]]$annot$Bigwig[j], "/GWD/bioinfo/projects/", "z:/links/")
+        
+        ### FOR SERVER ###
         x = str_replace(dat()[[data_type[i]]]$annot$Bigwig[j], "/GWD/bioinfo/projects/RD-Epigenetics-NetworkData/", "http://ftp.ebi.ac.uk/pub/databases/opentargets/")
         cat(file=stderr(), "File to import is:", x, "\n")
-        if(file.exists(x)) {
-          my_tracks_df[[i]] = c(my_tracks_df[[i]], list(as.data.frame(import.bw(x, which=roi))[,c(1:3,6)]))
-        } else {
-          my_tracks_df[[i]] = c(my_tracks_df[[i]], list(data.frame()))
-        }
+        my_tracks_df[[i]] = c(my_tracks_df[[i]], list(as.data.frame(import.bw(x, which=roi))[,c(1:3,6)]))
+        ### FOR SERVER ###
+        
+        ### FOR LOCAL ###
+        # x = str_replace(dat()[[data_type[i]]]$annot$Bigwig[j], "/GWD/bioinfo/projects/", "z:/links/"
+        # if(file.exists(x)) {
+        #   my_tracks_df[[i]] = c(my_tracks_df[[i]], list(as.data.frame(import.bw(x, which=roi))[,c(1:3,6)]))
+        # } else {
+        #   my_tracks_df[[i]] = c(my_tracks_df[[i]], list(data.frame()))
+        # }
+        ### FOR LOCAL ###
+        
       }
     }
-    
-    cat(file=stderr(), as.character(my_tracks_df[[1]]))
     
     # mart_1 = useMart("ensembl", dataset="hsapiens_gene_ensembl")
     # t_list = getBM(attributes=c("chromosome_name","exon_chrom_start","exon_chrom_end","ensembl_transcript_id","strand","ensembl_gene_id"), filters='hgnc_symbol', values=roi$hgnc_symbol, mart=mart_1)
