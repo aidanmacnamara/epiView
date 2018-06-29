@@ -476,7 +476,7 @@ shinyServer(function(input, output, session) {
       }
     }
     
-    cat(file=stderr(), lapply(my_tracks_df, head))
+    cat(file=stderr(), as.character(my_tracks_df[[1]]))
     
     # mart_1 = useMart("ensembl", dataset="hsapiens_gene_ensembl")
     # t_list = getBM(attributes=c("chromosome_name","exon_chrom_start","exon_chrom_end","ensembl_transcript_id","strand","ensembl_gene_id"), filters='hgnc_symbol', values=roi$hgnc_symbol, mart=mart_1)
