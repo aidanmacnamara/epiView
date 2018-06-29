@@ -467,7 +467,7 @@ shinyServer(function(input, output, session) {
       for(j in sample_ix) {
         # x = str_replace(dat()[[data_type[i]]]$annot$Bigwig[j], "/GWD/bioinfo/projects/", "z:/links/")
         x = str_replace(dat()[[data_type[i]]]$annot$Bigwig[j], "/GWD/bioinfo/projects/RD-Epigenetics-NetworkData/", "http://ftp.ebi.ac.uk/pub/databases/opentargets/")
-        print(x)
+        observe({if(USER$Logged == TRUE) {cat(paste(x))}})
         if(file.exists(x)) {
           my_tracks_df[[i]] = c(my_tracks_df[[i]], list(as.data.frame(import.bw(x, which=roi))[,c(1:3,6)]))
         } else {
