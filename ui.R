@@ -117,8 +117,8 @@ ui <- fluidPage(
                                   list(
                                     "All",
                                     "Project 1 (blood)"=1,
-                                    "Project 2 (lung)"=2,
-                                    "Project 3 (monocyte/macrophage)"=3,
+                                    "Project 2 (monocyte/macrophage)"=2,
+                                    "Project 3 (lung)"=3,
                                     "Project 4 (liver)"=4,
                                     "Project 5 (T-cells)"=5,
                                     "Project 6 (B-cells)"=6,
@@ -580,14 +580,17 @@ ui <- fluidPage(
                           'download_gsk_data',
                           'Download table'
                         )
-                 ),
-                 
-                 column(width=3,
-                        downloadButton(
-                          'download_bigwig',
-                          'Download signal files from selected'
-                        )
                  )
+                 
+                 # column(width=3,
+                 #        downloadButton(
+                 #          'download_bigwig',
+                 #          'Download signal files from selected'
+                 #        )
+                 # ),
+                 
+                 # bsTooltip("download_bigwig", "This will zip the selected bigwig files and download - be aware this may take a few minutes. Alternatively, copy and paste the file location (select 'Bigwig' from the column menu) and download from your browser.", placement="bottom", trigger="hover", options=NULL)
+                 
                ),
                
                h3(""),
