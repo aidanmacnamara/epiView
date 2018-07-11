@@ -10,7 +10,7 @@ require(stringr)
 require(readxl)
 require(shinyBS)
 require(DT)
-require(GoViewer)
+# require(GoViewer)
 # require(plyr)
 # require(rTensor)
 # require(reshape)
@@ -25,7 +25,7 @@ load("data/msig_go_bp.RData") # gene sets for enrichment
 data_gsk = read_excel(system.file("extdata", "data_gsk.xlsx", package="epiChoose"))
 data_gsk$Bigwig = str_replace(data_gsk$Bigwig, "/GWD/bioinfo/projects/RD-Epigenetics-NetworkData/", "http://ftp.ebi.ac.uk/pub/databases/opentargets/")
 
-cx = reactiveValues(full.data=list(), selections=list())
-data(P2.source)
-cx$full.data = P2.source
+# cx = reactiveValues(full.data=list(), selections=list())
+# data(P2.source)
+# cx$full.data = P2.source
 
