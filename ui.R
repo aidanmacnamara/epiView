@@ -613,6 +613,12 @@ ui <- fluidPage(
                column(width=5)
                
              )
+    ),
+    
+    tabPanel("Pairwise Comparisons",
+             
+             gvTab2("gv", input, ouput, ui=T, cx=cx)
+             
     )
     
   )

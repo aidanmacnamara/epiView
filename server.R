@@ -136,10 +136,18 @@ shinyServer(function(input, output, session) {
     
     gene_upload <- NULL
     if(!is.null(input$user_choice$datapath)) {
-      if(input$header) {
-        gene_upload = as.character(unlist(read_csv(input$user_choice$datapath)))
+      if(str_detect(input$user_choice$datapath, "\\.xlsx$") | str_detect(input$user_choice$datapath, "\\.xls$")) {
+        if(input$header) {
+          gene_upload = as.character(unlist(read_excel(input$user_choice$datapath)))
+        } else {
+          gene_upload = as.character(unlist(read_excel(input$user_choice$datapath, col_names=FALSE)))
+        }  
       } else {
-        gene_upload = as.character(unlist(read_csv(input$user_choice$datapath, col_names=FALSE)))
+        if(input$header) {
+          gene_upload = as.character(unlist(read_csv(input$user_choice$datapath)))
+        } else {
+          gene_upload = as.character(unlist(read_csv(input$user_choice$datapath, col_names=FALSE)))
+        }
       }
     }
     
@@ -596,7 +604,7 @@ shinyServer(function(input, output, session) {
       height = "20px"
     ))
   }, deleteFile=FALSE)
-
+  
   
   output$info_button_3 <- renderImage({
     return(list(
@@ -640,6 +648,9 @@ shinyServer(function(input, output, session) {
       height = "20px"
     ))
   }, deleteFile=FALSE)
+  
+  
+  gvTab2("gv", input, output, session, ui=F, cx=cx)
   
   
 })
