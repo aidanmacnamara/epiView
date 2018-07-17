@@ -476,13 +476,13 @@ shinyServer(function(input, output, session) {
       
       if(data_type[i] == "RNA") {
         
-        rna_in = unlist(tile(roi, n=100))
+        rna_in = unlist(tile(roi, width=5))
         rna_in$score = 0
         for(k in 1:length(tss_regions)) {
           rna_in$score[subjectHits(findOverlaps(tss_regions[k], rna_in))] = k
-          rna_in = c(rna_in[rna_in$score!=k], reduce(rna_in[rna_in$score==k]))
-          rna_in$score[is.na(rna_in$score)] = k
-          rna_in = sort(rna_in)
+          # rna_in = c(rna_in[rna_in$score!=k], reduce(rna_in[rna_in$score==k]))
+          # rna_in$score[is.na(rna_in$score)] = k
+          # rna_in = sort(rna_in)
         }
         
         rna_in_ls = lapply(1:length(sample_ix), function(x) as.data.frame(rna_in)[,c(1:3,6)])
