@@ -465,31 +465,59 @@ shinyServer(function(input, output, session) {
     
     # TO EDIT BY COLLAPSE-TO-GENE TYPE
     tss_window = 2e3
-    regions = gene_list_all[col_ix]
-    start(regions) = regions$transcription_start_site - tss_window
-    end(regions) = regions$transcription_start_site + tss_window
-    regions = as.data.frame(regions)[,1:3]
+    tss_regions = gene_list_all[col_ix]
+    start(tss_regions) = tss_regions$transcription_start_site - tss_window
+    end(tss_regions) = tss_regions$transcription_start_site + tss_window
+    tss_regions_df = as.data.frame(tss_regions)[,1:3]
     
     my_tracks_df = vector("list", length(data_type))
+    
     for(i in 1:length(data_type)) {
-      for(j in sample_ix) {
+      
+      if(data_type[i] == "RNA") {
         
-        ### FOR SERVER ###
-        x = str_replace(dat()[[data_type[i]]]$annot$Bigwig[j], "/GWD/bioinfo/projects/RD-Epigenetics-NetworkData/", "http://ftp.ebi.ac.uk/pub/databases/opentargets/")
-        cat(file=stderr(), "File to import is:", x, "\n")
-        my_tracks_df[[i]] = c(my_tracks_df[[i]], list(as.data.frame(import.bw(x, which=roi))[,c(1:3,6)]))
-        ### FOR SERVER ###
+        rna_in = unlist(tile(roi, n=100))
+        rna_in$score = 0
+        for(k in 1:length(tss_regions)) {
+          rna_in$score[subjectHits(findOverlaps(tss_regions[k], rna_in))] = k
+        }
         
-        ### FOR LOCAL ###
-        # x = str_replace(dat()[[data_type[i]]]$annot$Bigwig[j], "/GWD/bioinfo/projects/", "z:/links/"
-        # if(file.exists(x)) {
-        #   my_tracks_df[[i]] = c(my_tracks_df[[i]], list(as.data.frame(import.bw(x, which=roi))[,c(1:3,6)]))
-        # } else {
-        #   my_tracks_df[[i]] = c(my_tracks_df[[i]], list(data.frame()))
-        # }
-        ### FOR LOCAL ###
+        rna_in_ls = lapply(1:length(sample_ix), function(x) as.data.frame(rna_in)[,c(1:3,6)])
         
+        for(j in 1:length(sample_ix)) {
+          for(k in 1:length(col_ix)) {
+            if(is.na(dat()$RNA$res[sample_ix[j],col_ix[k]])) {
+              rna_in_ls[[j]]$score[rna_in_ls[[j]]$score==k] = 0
+            } else {
+              rna_in_ls[[j]]$score[rna_in_ls[[j]]$score==k] = dat()$RNA$res[sample_ix[j],col_ix[k]]
+            }
+          } 
+        }
+        
+        my_tracks_df[[i]] = rna_in_ls
+        
+      } else {
+        
+        for(j in sample_ix) {
+          
+          ### FOR SERVER ###
+          # x = str_replace(dat()[[data_type[i]]]$annot$Bigwig[j], "/GWD/bioinfo/projects/RD-Epigenetics-NetworkData/", "http://ftp.ebi.ac.uk/pub/databases/opentargets/")
+          # cat(file=stderr(), "File to import is:", x, "\n")
+          # my_tracks_df[[i]] = c(my_tracks_df[[i]], list(as.data.frame(import.bw(x, which=roi))[,c(1:3,6)]))
+          ### FOR SERVER ###
+          
+          ### FOR LOCAL ###
+          x = str_replace(dat()[[data_type[i]]]$annot$Bigwig[j], "/GWD/bioinfo/projects/", "z:/links/")
+          if(file.exists(x)) {
+            my_tracks_df[[i]] = c(my_tracks_df[[i]], list(as.data.frame(import.bw(x, which=roi))[,c(1:3,6)]))
+          } else {
+            my_tracks_df[[i]] = c(my_tracks_df[[i]], list(data.frame()))
+          }
+          ### FOR LOCAL ###
+          
+        }
       }
+      
     }
     
     # mart_1 = useMart("ensembl", dataset="hsapiens_gene_ensembl")
@@ -538,7 +566,7 @@ shinyServer(function(input, output, session) {
         }
       }
       
-      plotBed(regions, chrom, chromstart, chromend)
+      plotBed(tss_regions_df, chrom, chromstart, chromend)
       
       plotGenes(t_list_filtered, chrom, chromstart, chromend, types=t_list_filtered$type, labeltext=TRUE, maxrows=50, height=0.4, plotgenetype="box", fontsize=2)
       labelplot(title=roi$hgnc_symbol[g_ix], titlecex=2)
