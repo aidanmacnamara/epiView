@@ -15,6 +15,12 @@ require(GoViewer)
 # require(rTensor)
 # require(reshape)
 
+# run this to get transcript data for browser
+
+# mart_1 = useMart("ensembl", dataset="hsapiens_gene_ensembl")
+# t_list = getBM(attributes=c("chromosome_name","exon_chrom_start","exon_chrom_end","ensembl_transcript_id","ensembl_gene_id","strand","external_gene_name"), filters=list(chromosome_name=c(as.character(1:22), "X", "Y"), with_protein_id=TRUE), mart=mart_1)
+# t_list = arrange(t_list, chromosome_name, exon_chrom_start, exon_chrom_end)
+# save(t_list, file="data/t_list.RData")
 
 # global objects
 

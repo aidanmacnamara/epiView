@@ -523,11 +523,6 @@ shinyServer(function(input, output, session) {
       
     }
     
-    # mart_1 = useMart("ensembl", dataset="hsapiens_gene_ensembl")
-    # t_list = getBM(attributes=c("chromosome_name","exon_chrom_start","exon_chrom_end","ensembl_transcript_id","strand","ensembl_gene_id"), filters='hgnc_symbol', values=roi$hgnc_symbol, mart=mart_1)
-    # t_list$type = "exon"
-    # t_list$chromosome_name = paste0("chr", t_list$chromosome_name)
-    
     t_list_filtered = filter(t_list, external_gene_name %in% input$gene_browser_choice)
     
     layout(matrix(c(1:((length(data_type)+2)*length(roi))), length(data_type)+2, length(roi), byrow=FALSE), heights=c(rep(6/length(data_type),length(data_type)),1,4))
