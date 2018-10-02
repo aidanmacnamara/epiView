@@ -463,13 +463,12 @@ shinyServer(function(input, output, session) {
     start(roi) = start(roi) - win
     end(roi) = end(roi) + win
     
-    # TO EDIT BY COLLAPSE-TO-GENE TYPE
+    # this is used for the rna track
     tss_window = 2e3
     tss_regions = gene_list_all[col_ix]
     start(tss_regions) = tss_regions$transcription_start_site - tss_window
     end(tss_regions) = tss_regions$transcription_start_site + tss_window
-    tss_regions_df = as.data.frame(tss_regions)[,1:3]
-    
+
     my_tracks_df = vector("list", length(data_type))
     
     for(i in 1:length(data_type)) {
@@ -504,18 +503,18 @@ shinyServer(function(input, output, session) {
         for(j in sample_ix) {
           
           ### FOR SERVER ###
-          x = str_replace(dat()[[data_type[i]]]$annot$Bigwig[j], "/GWD/bioinfo/projects/RD-Epigenetics-NetworkData/", "http://ftp.ebi.ac.uk/pub/databases/opentargets/")
-          cat(file=stderr(), "File to import is:", x, "\n")
-          my_tracks_df[[i]] = c(my_tracks_df[[i]], list(as.data.frame(import.bw(x, which=roi))[,c(1:3,6)]))
+          # x = str_replace(dat()[[data_type[i]]]$annot$Bigwig[j], "/GWD/bioinfo/projects/RD-Epigenetics-NetworkData/", "http://ftp.ebi.ac.uk/pub/databases/opentargets/")
+          # cat(file=stderr(), "File to import is:", x, "\n")
+          # my_tracks_df[[i]] = c(my_tracks_df[[i]], list(as.data.frame(import.bw(x, which=roi))[,c(1:3,6)]))
           ### FOR SERVER ###
           
           ### FOR LOCAL ###
-          # x = str_replace(dat()[[data_type[i]]]$annot$Bigwig[j], "/GWD/bioinfo/projects/", "z:/links/")
-          # if(file.exists(x)) {
-          #   my_tracks_df[[i]] = c(my_tracks_df[[i]], list(as.data.frame(import.bw(x, which=roi))[,c(1:3,6)]))
-          # } else {
-          #   my_tracks_df[[i]] = c(my_tracks_df[[i]], list(data.frame()))
-          # }
+          x = str_replace(dat()[[data_type[i]]]$annot$Bigwig[j], "/GWD/bioinfo/projects/", "z:/links/")
+          if(file.exists(x)) {
+            my_tracks_df[[i]] = c(my_tracks_df[[i]], list(as.data.frame(import.bw(x, which=roi))[,c(1:3,6)]))
+          } else {
+            my_tracks_df[[i]] = c(my_tracks_df[[i]], list(data.frame()))
+          }
           ### FOR LOCAL ###
           
         }
@@ -526,7 +525,7 @@ shinyServer(function(input, output, session) {
     t_list_filtered = filter(t_list, external_gene_name %in% input$gene_browser_choice)
     
     layout(matrix(c(1:((length(data_type)+2)*length(roi))), length(data_type)+2, length(roi), byrow=FALSE), heights=c(rep(6/length(data_type),length(data_type)),1,4))
-    par(mar=c(4,3,3,3))
+    par(mar=c(4,4,3,3))
     
     for(g_ix in 1:length(roi)) {
       
@@ -564,7 +563,7 @@ shinyServer(function(input, output, session) {
         }
       }
       
-      plotBed(tss_regions_df, chrom, chromstart, chromend)
+      plotBed(roi_reg_df, chrom, chromstart, chromend)
       
       plotGenes(t_list_filtered, chrom, chromstart, chromend, types=t_list_filtered$type, labeltext=TRUE, maxrows=50, height=0.4, plotgenetype="box", fontsize=2)
       labelplot(title=roi$hgnc_symbol[g_ix], titlecex=2)

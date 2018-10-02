@@ -28,6 +28,7 @@ load("data/dat_all.RData")
 load("data/gene_list_all.RData") # granges object (column annotation)
 load("data/t_list.RData") # for sushi plot
 load("data/msig_go_bp.RData") # gene sets for enrichment
+load("data/roi_reg_df.RData") # regulatory regions for browser
 data_gsk = read_excel(system.file("extdata", "data_gsk.xlsx", package="epiChoose"))
 data_gsk$Bigwig = str_replace(data_gsk$Bigwig, "/GWD/bioinfo/projects/RD-Epigenetics-NetworkData/", "http://ftp.ebi.ac.uk/pub/databases/opentargets/")
 
