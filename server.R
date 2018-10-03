@@ -503,18 +503,18 @@ shinyServer(function(input, output, session) {
         for(j in sample_ix) {
           
           ### FOR SERVER ###
-          # x = str_replace(dat()[[data_type[i]]]$annot$Bigwig[j], "/GWD/bioinfo/projects/RD-Epigenetics-NetworkData/", "http://ftp.ebi.ac.uk/pub/databases/opentargets/")
-          # cat(file=stderr(), "File to import is:", x, "\n")
-          # my_tracks_df[[i]] = c(my_tracks_df[[i]], list(as.data.frame(import.bw(x, which=roi))[,c(1:3,6)]))
+          x = str_replace(dat()[[data_type[i]]]$annot$Bigwig[j], "/GWD/bioinfo/projects/RD-Epigenetics-NetworkData/", "http://ftp.ebi.ac.uk/pub/databases/opentargets/")
+          cat(file=stderr(), "File to import is:", x, "\n")
+          my_tracks_df[[i]] = c(my_tracks_df[[i]], list(as.data.frame(import.bw(x, which=roi))[,c(1:3,6)]))
           ### FOR SERVER ###
           
           ### FOR LOCAL ###
-          x = str_replace(dat()[[data_type[i]]]$annot$Bigwig[j], "/GWD/bioinfo/projects/", "z:/links/")
-          if(file.exists(x)) {
-            my_tracks_df[[i]] = c(my_tracks_df[[i]], list(as.data.frame(import.bw(x, which=roi))[,c(1:3,6)]))
-          } else {
-            my_tracks_df[[i]] = c(my_tracks_df[[i]], list(data.frame()))
-          }
+          # x = str_replace(dat()[[data_type[i]]]$annot$Bigwig[j], "/GWD/bioinfo/projects/", "z:/links/")
+          # if(file.exists(x)) {
+          #   my_tracks_df[[i]] = c(my_tracks_df[[i]], list(as.data.frame(import.bw(x, which=roi))[,c(1:3,6)]))
+          # } else {
+          #   my_tracks_df[[i]] = c(my_tracks_df[[i]], list(data.frame()))
+          # }
           ### FOR LOCAL ###
           
         }
