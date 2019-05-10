@@ -35,34 +35,34 @@ data_gsk$Bigwig = str_replace(data_gsk$Bigwig, "/GWD/bioinfo/projects/RD-Epigene
 
 # DAVID'S CODE ------------------------------------------------------------
 
-cx = reactiveValues(
-  bundles=list(),
-  contrast.data=list(),
-  epi.data=list(),
-  selections=list(),
-  legend=list(),
-  controls=list(),
-  results=list(),
-  status=list(),
-  colour.legends=globalOptions("colour.legend"), # provisional values
-  active.colour.legend=list(),
-  pca.selected.points=list()
-)
-
-data(P2.source)
-
-# add bundles interface
-bundles= list(
-  P2 = goViewerInputSourceBundle(P2.source, "project two"),
-  P2a = goViewerInputSourceBundle(P2.source[1:3], "test: P2 1-3"),
-  P2b=goViewerInputSourceBundle(P2.source[4:5], "test: P2 4-5")
-)
-
-# set the contrast data default to the first entry
-cx$bundles = bundles
-cx$contrast.data = flattenBundles(bundles[1])
-
-# currently, we are only loading P2 epi-data
-data("epiP2")
-cx$epi.data = epiP2$tmp
+# cx = reactiveValues(
+#   bundles=list(),
+#   contrast.data=list(),
+#   epi.data=list(),
+#   selections=list(),
+#   legend=list(),
+#   controls=list(),
+#   results=list(),
+#   status=list(),
+#   colour.legends=globalOptions("colour.legend"), # provisional values
+#   active.colour.legend=list(),
+#   pca.selected.points=list()
+# )
+# 
+# data(P2.source)
+# 
+# # add bundles interface
+# bundles= list(
+#   P2 = goViewerInputSourceBundle(P2.source, "project two"),
+#   P2a = goViewerInputSourceBundle(P2.source[1:3], "test: P2 1-3"),
+#   P2b=goViewerInputSourceBundle(P2.source[4:5], "test: P2 4-5")
+# )
+# 
+# # set the contrast data default to the first entry
+# cx$bundles = bundles
+# cx$contrast.data = flattenBundles(bundles[1])
+# 
+# # currently, we are only loading P2 epi-data
+# data("epiP2")
+# cx$epi.data = epiP2$tmp
 
