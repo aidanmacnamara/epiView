@@ -1,0 +1,11 @@
+Package: GoViewer
+Type: Package
+Title: GO viewing GUI
+Version: 0.1.0
+Author: David R Wille
+Maintainer: David R Wille <david.r.wille@gsk.com>
+Description: Offers tools to apply GO methodology to various types of gene list. Will also include more general
+   tools as part of an addition to the OTAR-020 GSK Cell Lines OpenTargets project.
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1
