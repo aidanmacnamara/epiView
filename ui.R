@@ -123,7 +123,8 @@ ui <- fluidPage(
                                     "Project 5 (T-cells)"=5,
                                     "Project 6 (B-cells)"=6,
                                     "Blueprint (haematopoiesis)"="BLUEPRINT",
-                                    "ENCODE (cell lines)"="ENCODE"
+                                    "ENCODE (cell lines)"="ENCODE",
+                                    "Wang et al."="WANG"
                                   ), selected="All"
                ),
                
