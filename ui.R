@@ -268,7 +268,7 @@ ui <- fluidPage(
                           
                           selectInput("go_choice", label="Gene Ontology Choice", 
                                       choices = as.list(sort(names(msig_go_bp))),
-                                      selected = list("GLYCERALDEHYDE 3 PHOSPHATE METABOLIC PROCESS"),
+                                      selected = list("MACROPHAGE DIFFERENTIATION"),
                                       multiple=TRUE),
                           
                           h3(""),
