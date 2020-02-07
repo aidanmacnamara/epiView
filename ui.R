@@ -148,7 +148,7 @@ ui <- fluidPage(
                
                textInput("cell_type_select",
                          label="Filter for these Blueprint cell types:",
-                         NULL, value="C0010K","C00408","C000S5","C0011I","C004SQ","C001UY,S0022I","S00390","S001MJ","S001S7"),
+                         NULL, value="C0010K,C00408,C000S5,C0011I,C004SQ,C001UY,S0022I,S00390,S001MJ,S001S7"),
                
                bsTooltip("cell_type_select", "To avoid too much Blueprint data in the plot (if you have selected Blueprint data to display), you can filter by immune/blood cell type here", placement="bottom", trigger="hover", options=NULL),
                
