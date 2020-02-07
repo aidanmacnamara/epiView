@@ -227,7 +227,14 @@ ui <- fluidPage(
                           selectInput("cell_target_choice", label="Cell Target Choice", 
                                       choices = as.list(sort(cells)),
                                       multiple=TRUE,
-                                      selected=list("NHBE_BR1_Baseline")
+                                      selected=list(
+                                        "C000S5_CD14-positive, CD16-negative classical monocyte",
+                                        "C0010K_CD14-positive, CD16-negative classical monocyte",
+                                        "S001S7_macrophage",
+                                        "S0022I_macrophage",
+                                        "Monocyte_11",
+                                        "Macrophage_11"
+                                        )
                           ),
                           
                           bsTooltip("cell_target_choice", "Choose the target cell (i.e. the cell type / cell line that the other cell models will be measured against).", placement="bottom", trigger="hover", options=NULL),
@@ -239,11 +246,10 @@ ui <- fluidPage(
                                       choices = as.list(sort(cells)),
                                       multiple=TRUE,
                                       selected=list(
-                                        "A549_BR1_Baseline",
-                                        "A549_BR2_Baseline",
-                                        "BEAS2B_BR1_Baseline",
-                                        "BEAS2B_BR2_Baseline",
-                                        "A549_Broad"
+                                        "THP-1_BR1_Baseline",
+                                        "THP-1_BR2_Baseline",
+                                        "THP-1_BR1_PMA+LPS",
+                                        "THP-1_BR2_PMA+LPS"
                                       )),
                           
                           bsTooltip("cell_candidate_choice", "Choose the possible cell models for the chosen target cell.", placement="bottom", trigger="hover", options=NULL),
