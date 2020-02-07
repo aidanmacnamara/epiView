@@ -125,7 +125,7 @@ ui <- fluidPage(
                                     "Blueprint (haematopoiesis)"="BLUEPRINT",
                                     "ENCODE (cell lines)"="ENCODE",
                                     "Wang et al."="WANG"
-                                  ), selected=c("2","BlUEPRINT","WANG")
+                                  ), selected=c("2","BLUEPRINT","WANG")
                ),
                
                bsTooltip("project_choice", "Choose 1 or more projects to analyse with PCA/MDS", placement="bottom", trigger="hover", options=NULL),
