@@ -1,0 +1,11 @@
+Package: profileViewer
+Type: Package
+Title: helps view gene profiles for CTTV-020 project two
+Version: 0.1.0
+Author: David R Wille
+Maintainer: David R Wille <david.r.wille@gsk.com>
+Description: A simple Shiny script to filter genes on signs of PMA change, agreement with primary both
+    in terms of change and final state
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.0
