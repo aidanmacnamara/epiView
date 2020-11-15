@@ -87,7 +87,6 @@ pcaPanel=function(id,input,output,session=NULL,ui=T,cx=NULL){
     # ....................................................................................................
     # reactive components
 
-
     controls=reactive({
       dirs=as.integer(c(input[[ns("x.dir")]],
                         input[[ns("y.dir")]]))
@@ -331,8 +330,8 @@ pcaPanel=function(id,input,output,session=NULL,ui=T,cx=NULL){
         if (!is.null(dirDefined) && nrow(dirDefined) > 0){
 
           # ... first compute the SS from the PCA eigenvalues
-          ev=pcaObj()$sdev
-          percentExplained=100*ev^2/sum(ev^2)
+          ev=pcaObj()$sdev^2
+          percentExplained=100*ev/sum(ev)
 
           n=length(ev)
           w=wideDirectionFormat(n,dirDefined)
