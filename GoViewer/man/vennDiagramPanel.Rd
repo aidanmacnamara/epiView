@@ -9,6 +9,9 @@ vennDiagramPanel(id, input, output, ui = T, cx = NULL)
 \arguments{
 \item{cx}{}
 }
+\value{
+
+}
 \description{
 creates a tab view for Venn diagrams
 }

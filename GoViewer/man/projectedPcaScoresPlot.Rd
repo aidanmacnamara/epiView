@@ -4,10 +4,21 @@
 \alias{projectedPcaScoresPlot}
 \title{a simple scores plot suitable for PCA or other decompositions}
 \usage{
-projectedPcaScoresPlot(pca.obj, data2, pcs = 1:2, size = 2,
-  label = "comp ", rows = NULL, reflect.x = F, reflect.y = F,
-  scale.x = 1, scale.y = 1, axes = T, colourDictionary = NULL,
-  additionalPoints = NULL)
+projectedPcaScoresPlot(
+  pca.obj,
+  data2,
+  pcs = 1:2,
+  size = 2,
+  label = "comp ",
+  rows = NULL,
+  reflect.x = F,
+  reflect.y = F,
+  scale.x = 1,
+  scale.y = 1,
+  axes = T,
+  colourDictionary = NULL,
+  additionalPoints = NULL
+)
 }
 \arguments{
 \item{data2}{a second data set of alternate reponses tp be plotted from a parallel space. Could be

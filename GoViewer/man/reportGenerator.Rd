@@ -4,9 +4,15 @@
 \alias{reportGenerator}
 \title{generate a downloadable report}
 \usage{
-reportGenerator(id, input = NULL, output = NULL, ui = T,
-  buttonLabel = "download report", params = NULL,
-  rmdScript = "report.rmd")
+reportGenerator(
+  id,
+  input = NULL,
+  output = NULL,
+  ui = T,
+  buttonLabel = "download report",
+  params = NULL,
+  rmdScript = "report.rmd"
+)
 }
 \arguments{
 \item{id}{Shiny widget ID}
@@ -19,7 +25,8 @@ reportGenerator(id, input = NULL, output = NULL, ui = T,
 
 \item{buttonLabel}{a lable for the button (set from the SERVER side)}
 
-\item{params}{an additional list of parameters to pass to the report generator}
+\item{params}{an additional list of parameters to pass to the report generator. If NULL (default) a list with a single entry, now,
+passed for the current date}
 
 \item{rmdScript}{the R markdown script to run. See \url{https://shiny.rstudio.com/articles/generating-reports.html} for a discussion}
 }

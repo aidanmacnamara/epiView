@@ -4,8 +4,12 @@
 \alias{goViewerInputSource}
 \title{constructs an input data source object}
 \usage{
-goViewerInputSource(x, name = "source data input", annotation = "SYMBOL",
-  na.rm = F)
+goViewerInputSource(
+  x,
+  name = "source data input",
+  annotation = "SYMBOL",
+  na.rm = F
+)
 }
 \arguments{
 \item{x}{a data frame or similar of gene or genomic data. Alternatively, supplying a

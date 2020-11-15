@@ -11,6 +11,9 @@ yesNo(x, yesno = c("yes", "no"))
 
 \item{yesno}{an optional length two vector containing a translation of true and false}
 }
+\value{
+
+}
 \description{
 Prints yes or no for true or false. Supports vectors and alternative
 choices of words.

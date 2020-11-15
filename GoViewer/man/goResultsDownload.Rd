@@ -4,9 +4,17 @@
 \alias{goResultsDownload}
 \title{downloads a copy of the GO output}
 \usage{
-goResultsDownload(id, input = NULL, output = NULL, ui = T,
-  goObject = NULL, goResultsObject = NULL,
-  fileName = "GO downloaded \%s.txt", message = T, goStatus = NULL)
+goResultsDownload(
+  id,
+  input = NULL,
+  output = NULL,
+  ui = T,
+  goObject = NULL,
+  goResultsObject = NULL,
+  fileName = "GO downloaded \%s.txt",
+  message = T,
+  goStatus = NULL
+)
 }
 \arguments{
 \item{id}{root for the Shiny widget ID}

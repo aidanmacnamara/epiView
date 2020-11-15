@@ -17,6 +17,9 @@ inputDataSummary(id, input, output, ui = T, x = NULL)
 
 \item{x}{a reactive function generating the selected input data}
 }
+\value{
+
+}
 \description{
 Intended for development and debugging
 }

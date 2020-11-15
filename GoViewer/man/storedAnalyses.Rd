@@ -4,8 +4,14 @@
 \alias{storedAnalyses}
 \title{reproduces stored GO analysis to the screen}
 \usage{
-storedAnalyses(id, input = NULL, output = NULL, session = NULL, ui = T,
-  cx = NULL)
+storedAnalyses(
+  id,
+  input = NULL,
+  output = NULL,
+  session = NULL,
+  ui = T,
+  cx = NULL
+)
 }
 \arguments{
 \item{id}{a shiny widget ID}
@@ -19,6 +25,9 @@ storedAnalyses(id, input = NULL, output = NULL, session = NULL, ui = T,
 \item{ui}{TRUE selects user interface components, o/w server}
 
 \item{cx}{a shiny reactive list containing the stored analyses in $results}
+}
+\value{
+
 }
 \description{
 Displays previous results stored in cx$results. If this list is empty, a no analysis

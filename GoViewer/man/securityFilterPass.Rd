@@ -4,8 +4,11 @@
 \alias{securityFilterPass}
 \title{security check for selection formulae}
 \usage{
-securityFilterPass(x, allowedSymbols = c("x", "y", "e", "abs\\\\(", "\\\\)",
-  "\\\\.", "=", "<", ">", "&", "\\\\|", "\\\\+", "-", "\\\\d"))
+securityFilterPass(
+  x,
+  allowedSymbols = c("x", "y", "e", "abs\\\\(", "\\\\)", "\\\\.", "=", "<", ">", "&",
+    "\\\\|", "\\\\+", "-", "\\\\d")
+)
 }
 \arguments{
 \item{x}{string to be checked}

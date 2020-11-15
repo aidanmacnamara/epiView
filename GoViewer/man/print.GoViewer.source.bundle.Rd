@@ -4,7 +4,7 @@
 \alias{print.GoViewer.source.bundle}
 \title{prints a GoViewer.source.bundle}
 \usage{
-\method{print}{GoViewer.source.bundle}(x)
+print.GoViewer.source.bundle(x)
 }
 \arguments{
 \item{x}{a GoViewer.source.bundle object}

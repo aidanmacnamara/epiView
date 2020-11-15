@@ -9,6 +9,9 @@ devPanel(id, input, output, session = NULL, ui = T, cx = cx)
 \arguments{
 \item{cx}{}
 }
+\value{
+
+}
 \description{
 test panel for development only
 }

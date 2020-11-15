@@ -4,10 +4,12 @@
 \name{epiP2}
 \alias{epiP2}
 \title{a view of the epigenetics data from project two}
-\format{a multi layer list
+\format{
+a multi layer list
 
 The format is complicated and see examples for a walk-through. Data
-is a selection of an object produced by Aidan.}
+is a selection of an object produced by Aidan.
+}
 \usage{
 data(epiP2)
 }

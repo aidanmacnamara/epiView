@@ -4,11 +4,13 @@
 \alias{genericDownloadButton}
 \title{Title}
 \usage{
-genericDownloadButton(id, input = NULL, output = NULL, ui = T,
-  data = NULL)
+genericDownloadButton(id, input = NULL, output = NULL, ui = T, data = NULL)
 }
 \arguments{
 \item{data}{}
+}
+\value{
+
 }
 \description{
 Title

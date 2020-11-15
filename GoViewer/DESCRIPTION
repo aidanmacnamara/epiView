@@ -8,4 +8,4 @@ Description: Offers tools to apply GO methodology to various types of gene list.
    tools as part of an addition to the OTAR-020 GSK Cell Lines OpenTargets project.
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 7.1.0

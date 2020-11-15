@@ -4,8 +4,13 @@
 \alias{goViewerInput}
 \title{constructs an input data object}
 \usage{
-goViewerInput(x, name = "input vector", annotation = "SYMBOL",
-  type = "ordered", na.rm = F)
+goViewerInput(
+  x,
+  name = "input vector",
+  annotation = "SYMBOL",
+  type = "ordered",
+  na.rm = F
+)
 }
 \arguments{
 \item{x}{a named vector of gene classifications. This can either be binary to split the list into two groups or

@@ -4,8 +4,13 @@
 \alias{requestString}
 \title{modal UI request for string}
 \usage{
-requestString(id.value, id.button, msg = "hello", msg.error = NULL,
-  placeholder = "enter text here")
+requestString(
+  id.value,
+  id.button,
+  msg = "hello",
+  msg.error = NULL,
+  placeholder = "enter text here"
+)
 }
 \arguments{
 \item{id.value}{Shiny ID of the returned value}

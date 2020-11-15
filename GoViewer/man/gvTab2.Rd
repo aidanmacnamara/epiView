@@ -4,11 +4,21 @@
 \alias{gvTab2}
 \title{Title}
 \usage{
-gvTab2(id, input = NULL, output = NULL, session = NULL, ui = T,
-  cx = NULL, helpLink = "https://www.bbc.co.uk/weather/")
+gvTab2(
+  id,
+  input = NULL,
+  output = NULL,
+  session = NULL,
+  ui = T,
+  cx = NULL,
+  helpLink = "https://www.bbc.co.uk/weather/"
+)
 }
 \arguments{
 \item{cx}{}
+}
+\value{
+
 }
 \description{
 Title

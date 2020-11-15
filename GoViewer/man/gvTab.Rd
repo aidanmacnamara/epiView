@@ -4,11 +4,13 @@
 \alias{gvTab}
 \title{Title}
 \usage{
-gvTab(id, input = NULL, output = NULL, session = NULL, ui = T,
-  cx = NULL)
+gvTab(id, input = NULL, output = NULL, session = NULL, ui = T, cx = NULL)
 }
 \arguments{
 \item{cx}{}
+}
+\value{
+
 }
 \description{
 Title

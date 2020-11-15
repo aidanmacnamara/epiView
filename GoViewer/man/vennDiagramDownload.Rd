@@ -17,6 +17,9 @@ vennDiagramDownload(id, input, output, ui = T, setSelections = NULL)
 
 \item{setSelections}{a reactive object created by \link{vennDiagramPanel}}
 }
+\value{
+
+}
 \description{
 creates a download page for the Venn diagram panel
 }

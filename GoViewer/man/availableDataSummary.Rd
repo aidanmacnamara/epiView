@@ -9,6 +9,9 @@ availableDataSummary(id, input, output, session, ui = T, cx = NULL)
 \arguments{
 \item{cx}{}
 }
+\value{
+
+}
 \description{
 summary of the available data and selections
 }

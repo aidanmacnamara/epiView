@@ -15,6 +15,9 @@ makeGOobject(x, goType = "BP", minNodeSize = 20, nPositives = 100, ...)
 
 \item{nPositives}{the number of positive terms to be selected}
 }
+\value{
+
+}
 \description{
 makes a basic GO object against which enrichment tests can be run
 }

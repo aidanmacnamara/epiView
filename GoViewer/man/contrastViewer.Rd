@@ -9,6 +9,9 @@ contrastViewer(id, input, output, session = NULL, ui = T, cx = NULL)
 \arguments{
 \item{cx}{}
 }
+\value{
+
+}
 \description{
 top level contrast viewer code
 }

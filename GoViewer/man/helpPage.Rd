@@ -4,8 +4,14 @@
 \alias{helpPage}
 \title{displays help panel}
 \usage{
-helpPage(id = NULL, input = NULL, output = NULL, ui = T, topic = NULL,
-  links = "https://www.targetvalidation.org/")
+helpPage(
+  id = NULL,
+  input = NULL,
+  output = NULL,
+  ui = T,
+  topic = NULL,
+  links = "https://www.targetvalidation.org/"
+)
 }
 \arguments{
 \item{id}{a shiny ID (not currently used)}
@@ -23,4 +29,7 @@ referecned by the document, Be default, points to the Open Targets website for t
 }
 \value{
 output from a Shiny HTML tag
+}
+\description{
+
 }

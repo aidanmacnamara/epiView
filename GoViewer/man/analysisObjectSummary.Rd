@@ -4,14 +4,24 @@
 \alias{analysisObjectSummary}
 \title{displays a listing of selections or analysis objects}
 \usage{
-analysisObjectSummary(id, input, output = NULL, session = NULL, ui = T,
-  cx = cx, entryName = "selections",
+analysisObjectSummary(
+  id,
+  input,
+  output = NULL,
+  session = NULL,
+  ui = T,
+  cx = cx,
+  entryName = "selections",
   title = "<font color='red'>analysisObjectSummary title argument missing</font><br>",
   rowDisplay = function(w) {     c(msg =
-  "analysisObjectSummary rowDisplay argument missing", time = date()) })
+    "analysisObjectSummary rowDisplay argument missing", time = date()) }
+)
 }
 \arguments{
 \item{rowDisplay}{}
+}
+\value{
+
 }
 \description{
 displays a listing of selections or analysis objects

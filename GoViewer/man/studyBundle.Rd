@@ -4,8 +4,12 @@
 \alias{studyBundle}
 \title{creates}
 \usage{
-studyBundle(de = NULL, epigen = NULL, study = "study 2",
-  description = "a part of the ")
+studyBundle(
+  de = NULL,
+  epigen = NULL,
+  study = "study 2",
+  description = "a part of the "
+)
 }
 \arguments{
 \item{de}{a list goViewerInputSource objects}
@@ -15,6 +19,9 @@ studyBundle(de = NULL, epigen = NULL, study = "study 2",
 \item{study}{the studies name}
 
 \item{description}{a study description}
+}
+\value{
+
 }
 \description{
 creates

@@ -15,5 +15,5 @@ printed.
 }
 \examples{
 textMessageAsPlot("hello")
-textMessageAsPlot(sprintf("hello world!\\nthe current time\\n is \%s\\nsee you again\\nsoon",date()))
+textMessageAsPlot(sprintf("hello world!\nthe current time\n is \%s\nsee you again\nsoon",date()))
 }

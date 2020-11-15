@@ -4,9 +4,20 @@
 \alias{goQQviewer}
 \title{produce a observed vs expected quantile plot for GO enrichment}
 \usage{
-goQQviewer(id, input, output, session = NULL, ui = T, goObject = NULL,
-  goResultsObject = NULL, goMethods = NULL, goSavedObject = NULL,
-  title = NULL, title.nchar = 80, goStatus = NULL)
+goQQviewer(
+  id,
+  input,
+  output,
+  session = NULL,
+  ui = T,
+  goObject = NULL,
+  goResultsObject = NULL,
+  goMethods = NULL,
+  goSavedObject = NULL,
+  title = NULL,
+  title.nchar = 80,
+  goStatus = NULL
+)
 }
 \arguments{
 \item{id}{a Shiny UI id}

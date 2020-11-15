@@ -4,11 +4,20 @@
 \alias{goAnalysisDescripton}
 \title{returns a descriptive text for a GO analysis}
 \usage{
-goAnalysisDescripton(contrast, GOtype, GOmethod, minNodeSize, ordered,
-  noEnriched = NULL)
+goAnalysisDescripton(
+  contrast,
+  GOtype,
+  GOmethod,
+  minNodeSize,
+  ordered,
+  noEnriched = NULL
+)
 }
 \arguments{
 \item{noEnriched}{}
+}
+\value{
+
 }
 \description{
 returns a descriptive text for a GO analysis

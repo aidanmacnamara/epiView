@@ -9,6 +9,9 @@ selectInputDataObject(id, input, output, ui, all.inputs = NULL)
 \arguments{
 \item{all.inputs}{a reactive data object containing all the avaliable contrasts}
 }
+\value{
+
+}
 \description{
 selects the input contrast
 }

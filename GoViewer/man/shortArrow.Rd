@@ -9,6 +9,9 @@ shortArrow(x0, y0, x1, y1, alpha = 1, ...)
 \arguments{
 \item{...}{}
 }
+\value{
+
+}
 \description{
 Not used.Need something for ggplot2, but this is base graphics
 }

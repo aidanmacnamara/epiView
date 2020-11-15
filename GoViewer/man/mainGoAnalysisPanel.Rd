@@ -4,11 +4,21 @@
 \alias{mainGoAnalysisPanel}
 \title{main analysis panel}
 \usage{
-mainGoAnalysisPanel(id, input, output, session = NULL, ui = T,
-  x.in = NULL, cx = NULL)
+mainGoAnalysisPanel(
+  id,
+  input,
+  output,
+  session = NULL,
+  ui = T,
+  x.in = NULL,
+  cx = NULL
+)
 }
 \arguments{
 \item{x.in}{a GoViewerInput object requesting the current contrast}
+}
+\value{
+
 }
 \description{
 main analysis panel

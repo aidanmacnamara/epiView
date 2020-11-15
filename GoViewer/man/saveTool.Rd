@@ -17,6 +17,9 @@ saveTool(id, input, output = NULL, cx = NULL, ui = T)
 
 \item{ui}{TRUE (default) for UI calls, FALSE for server}
 }
+\value{
+
+}
 \description{
 A development code to save and copy values of the cx reactive array. Doing this by hand
 since it appears to be difficult to overwrite directly using load even if you get the same

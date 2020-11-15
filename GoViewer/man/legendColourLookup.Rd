@@ -4,8 +4,12 @@
 \alias{legendColourLookup}
 \title{assigns colours to text values using a matched list}
 \usage{
-legendColourLookup(values = NULL, dict, ignore.case = T,
-  default.colour = "black")
+legendColourLookup(
+  values = NULL,
+  dict,
+  ignore.case = T,
+  default.colour = "black"
+)
 }
 \arguments{
 \item{values}{the list of values to be coloured, e.g. labels on a

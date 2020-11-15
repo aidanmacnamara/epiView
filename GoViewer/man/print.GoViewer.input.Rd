@@ -4,7 +4,7 @@
 \alias{print.GoViewer.input}
 \title{prints an GoViewer data input object}
 \usage{
-\method{print}{GoViewer.input}(x)
+print.GoViewer.input(x)
 }
 \arguments{
 \item{x}{a GoView data input object}

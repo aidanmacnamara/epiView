@@ -5,7 +5,7 @@
 #' @param scores.data a scores matrix with columns for components.
 #'    Assumes items are labelled as rownames
 #' @param scores.sd a vector of associated SD's in the case of PCA. If not present, NULL provides
-#'    a default output
+#'    a default output. Note that these are the *square roots* if the eigenvalues
 #' @param pcs a vector of the components to be compared. If length greater than two, are binary
 #'    combinations are run and printed to the screen
 #' @param size size parameter for label texts
@@ -33,6 +33,7 @@
 #' @return a ggplot object containing the required graph. If length(pcs) > 2, NULL is returned
 #'    but all indicated views are printed to the screen
 #' @export
+#' @md
 
 
 simpleScoresPlot <- function(scores.data,
@@ -95,7 +96,7 @@ simpleScoresPlot <- function(scores.data,
 
     pc.names=pc.names[pcs]
 
-
+    # note the teh SDs are the square roots of the eigenvalues - hence the squares
     if (!is.null(scores.sd)){
       percentVar <- as.vector(scores.sd^2/sum(scores.sd^2))[pcs]
       pc.labels = paste(pc.names," (",signif(100*percentVar,3),"%)",sep="")

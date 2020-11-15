@@ -4,17 +4,29 @@
 \alias{simpleScoresPlot}
 \title{a simple scores plot suitable for PCA or other decompositions}
 \usage{
-simpleScoresPlot(scores.data, scores.sd = NULL, pcs = 2:3, size = 2,
-  label = "comp", rows = NULL, axes = T, reflect.x = F, reflect.y = F,
-  scale.x = 1, scale.y = 1, colourDictionary = NULL,
-  additionalPoints = NULL, additionalPointsWithArrows = T)
+simpleScoresPlot(
+  scores.data,
+  scores.sd = NULL,
+  pcs = 2:3,
+  size = 2,
+  label = "comp",
+  rows = NULL,
+  axes = T,
+  reflect.x = F,
+  reflect.y = F,
+  scale.x = 1,
+  scale.y = 1,
+  colourDictionary = NULL,
+  additionalPoints = NULL,
+  additionalPointsWithArrows = T
+)
 }
 \arguments{
 \item{scores.data}{a scores matrix with columns for components.
 Assumes items are labelled as rownames}
 
 \item{scores.sd}{a vector of associated SD's in the case of PCA. If not present, NULL provides
-a default output}
+a default output. Note that these are the \emph{square roots} if the eigenvalues}
 
 \item{pcs}{a vector of the components to be compared. If length greater than two, are binary
 combinations are run and printed to the screen}
@@ -45,7 +57,7 @@ its values and that of the data.}
 \item{colourDictionary}{an optional colour lookup table. See \link{legendColourLookUp} for details}
 
 \item{additionalPoints}{an optional data frame of additional points to be plotted over the standard output. Positions are
-read from the [assumed] x and y columns and the text to be plotted is taken from its rownames. If no row names are
+read from the \link{assumed} x and y columns and the text to be plotted is taken from its rownames. If no row names are
 supplied, points are labelled sequentially, 1, 2, 3 etc.}
 
 \item{additionalPointsWithArrows}{if additional points selected, setting this to true
@@ -53,7 +65,7 @@ links them with arrows}
 }
 \value{
 a ggplot object containing the required graph. If length(pcs) > 2, NULL is returned
-   but all indicated views are printed to the screen
+but all indicated views are printed to the screen
 }
 \description{
 Typically called by
