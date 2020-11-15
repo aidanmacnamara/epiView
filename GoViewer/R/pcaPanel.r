@@ -265,9 +265,10 @@ pcaPanel=function(id,input,output,session=NULL,ui=T,cx=NULL){
             column(2,actionButton(ns("explore.direction.title.button"),
                                   label="save"))
           ),
-          HTML("<p><i>Use this panel to select directions or axes you wish to
-                 investigate. You can then explore which genes are pathways
-                 drive them in the Gene Ontology (GO) viewer panel.</i></p>")
+          HTML("<p><i>Use this panel to select directions or axes you wish to",
+                 "investigate. After saving, you can explore them in the directions",
+                 "tab in this view or, if supported, via the ",
+                 "Gene Ontology (GO) viewer panel.</i></p>")
         )
       }
 
@@ -481,9 +482,12 @@ pcaPanel=function(id,input,output,session=NULL,ui=T,cx=NULL){
 
           cx$selections[[length(cx$selections)+1]]=entry
 
-          # capturing detailed directional information
+          # capturing selected principal component
           direction_info$last.update=list(type="standard",
-                                          time=date())
+                                          time=format(Sys.time(),"%H:%M"),
+                                          name=inputString,
+                                          pcDir=pcDir,
+                                          x=data.frame(gene=names(x),weight=x))
         } else {
           # custom direction
 
@@ -515,9 +519,11 @@ pcaPanel=function(id,input,output,session=NULL,ui=T,cx=NULL){
 
             cx$selections[[length(cx$selections)+1]]=entry
 
+
             # capturing detailed user selected direction
             direction_info$last.update=list(type="custom",
-                                            time=date(),
+                                            time=format(Sys.time(),"%H:%M"),
+                                            name=inputString,
                                             x=data.frame(gene=names(x),weight=x),
                                             direction=customDirection$direction,
                                             pca.components=pcaObj()$rotation[,customDirection$selected,drop=F])
