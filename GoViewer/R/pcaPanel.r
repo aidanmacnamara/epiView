@@ -413,7 +413,10 @@ pcaPanel=function(id,input,output,session=NULL,ui=T,cx=NULL){
 
     output[[ns("testing")]]=renderText({
 
+      print("hi")
+
       if (guard(input,ns,"transformation")){
+
 
         x=pcaData1()
         x.range=range(x)
@@ -436,8 +439,8 @@ pcaPanel=function(id,input,output,session=NULL,ui=T,cx=NULL){
                xyDir()[1],xyDir()[2],
                x.range[1],x.range[2])
 
-
       } else {
+
         NULL
       } # guard
 
@@ -454,6 +457,8 @@ pcaPanel=function(id,input,output,session=NULL,ui=T,cx=NULL){
       if (guard(input,ns,"explore.direction.type")){
 
         directionType=input[[ns("explore.direction.type")]]
+
+
 
         if (directionType != "custom"){
 
@@ -532,7 +537,7 @@ pcaPanel=function(id,input,output,session=NULL,ui=T,cx=NULL){
 
         }
       }
-    }
+      }
     )
 
 
