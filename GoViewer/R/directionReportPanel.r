@@ -5,7 +5,6 @@ directionReportPanel=function(id,input=NULL,output=NULL,ui=T,info=NULL){
 
     list(
       HTML("<h1></h1>"),
-      HTML("This pannel reports infomation about the last selected axes or directions in a PCA plot."),
       uiOutput(ns("report"))
     )
 
@@ -29,12 +28,28 @@ directionReportPanel=function(id,input=NULL,output=NULL,ui=T,info=NULL){
 
           x=last.update$x
 
-          list(HTML("<h3>custom user selected direction</h3>",
-                    "weightings and PCA information have been copied to an input box. From here you can copy and paste ",
-                    "to a notepad or Excel."),
-               textAreaInput(ns("not.used"),
-                             label="gene weightings",
-                             value=dataframe2tabs(last.update$x)))
+          print(last.update$direction)
+          print(head(last.update$pca.components))
+
+          list(HTML("<h3>reporting custom user selected direction</h3>",
+                    "Weightings and PCA information for ",
+                    "<font color='blue'>",nrow(x),
+                    "</font> genes absed upon a direction selected at <font color='blue'>",
+                    last.update$time,"</font>",
+                    " have been copied to an input box. From here you can copy and paste ",
+                    "to a notepad or Excel.<h1></h1>"),
+               wellPanel(textAreaInput(ns("not.used"),
+                                       label="gene weightings",
+                                       rows=10,
+                                       value=dataframe2tabs(cbind(last.update$x,
+                                                                  last.update$pca.components)))),
+               HTML("<h1></h1>",
+                    "These results were based upon direction of",
+                   vector2string(signif(last.update$direction,5)),
+                   "defined on",
+                   vector2string(colnames(last.update$pca.components))))
+
+
 
         } else if (type == "standard"){
 

@@ -518,7 +518,9 @@ pcaPanel=function(id,input,output,session=NULL,ui=T,cx=NULL){
             # capturing detailed user selected direction
             direction_info$last.update=list(type="custom",
                                             time=date(),
-                                            x=data.frame(gene=names(x),weight=x))
+                                            x=data.frame(gene=names(x),weight=x),
+                                            direction=customDirection$direction,
+                                            pca.components=pcaObj()$rotation[,customDirection$selected,drop=F])
 
           }
 
