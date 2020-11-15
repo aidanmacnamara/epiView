@@ -13,6 +13,9 @@ pcaPanel=function(id,input,output,session=NULL,ui=T,cx=NULL){
 
   customDirection=reactiveValues(selected=NA,direction=NA)
 
+  direction_info=reactiveValues(last.update=list(type=NULL,
+                                                 time=NULL))
+
   require(plyr)
 
   ns=NS(id)
@@ -70,7 +73,9 @@ pcaPanel=function(id,input,output,session=NULL,ui=T,cx=NULL){
                            verbatimTextOutput(ns("pca.info.text"))),
                   tabPanel("axis interpretation"),
                   tabPanel("legend",
-                           legendPanel("legend",input,output))
+                           legendPanel("legend",input,output)),
+                  tabPanel("directions",
+                           directionReportPanel(ns("directions")))
                 )
       )
     )
@@ -82,7 +87,7 @@ pcaPanel=function(id,input,output,session=NULL,ui=T,cx=NULL){
     # server side
 
     legendPanel("legend",input,output,ui=F,cx=cx)
-
+    directionReportPanel(ns("directions"),input,output,ui=F,info=direction_info)
 
     # ....................................................................................................
     # reactive components
@@ -416,7 +421,8 @@ pcaPanel=function(id,input,output,session=NULL,ui=T,cx=NULL){
         ep=as.integer(input[[ns("end.point")]])
 
         if (input[[ns("display.type")]] == "project"){
-          projectionText=fpaste("\nprojected into %s PCA components",endPoints()[as.integer(input[[ns("projection.end.point")]])])
+          projectionText=fpaste("\nprojected into %s PCA components",
+                                endPoints()[as.integer(input[[ns("projection.end.point")]])])
         } else {
           projectionText=""
         }
@@ -474,6 +480,10 @@ pcaPanel=function(id,input,output,session=NULL,ui=T,cx=NULL){
                            type="message",duration=1.5)
 
           cx$selections[[length(cx$selections)+1]]=entry
+
+          # capturing detailed directional information
+          direction_info$last.update=list(type="standard",
+                                          time=date())
         } else {
           # custom direction
 
@@ -504,6 +514,11 @@ pcaPanel=function(id,input,output,session=NULL,ui=T,cx=NULL){
                              type="message",duration=1.5)
 
             cx$selections[[length(cx$selections)+1]]=entry
+
+            # capturing detailed user selected direction
+            direction_info$last.update=list(type="custom",
+                                            time=date(),
+                                            x=data.frame(gene=names(x),weight=x))
 
           }
 
