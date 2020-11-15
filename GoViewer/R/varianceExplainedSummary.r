@@ -15,6 +15,10 @@
 
 varianceExplainedSummary=function(pca.obj,k=NA){
 
+  # note that this makes sense as the $sdev component of the PCA object
+  # is actually the square root of the eigenvalues. Thus, here SD^2 are
+  # just the eignevalues as expected.
+
   SD=pca.obj$sdev
   percent=percent=100*SD^2/sum(SD^2)
 
