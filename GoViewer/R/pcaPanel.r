@@ -413,8 +413,6 @@ pcaPanel=function(id,input,output,session=NULL,ui=T,cx=NULL){
 
     output[[ns("testing")]]=renderText({
 
-      print("hi")
-
       if (guard(input,ns,"transformation")){
 
 
